@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright 2016 Huawei Technologies Co., Ltd.
+    Copyright 2016-17 Huawei Technologies Co., Ltd.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -38,25 +38,25 @@
         <!-- registering providers -->
         <jaxrs:providers>
             <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
-            <bean class="org.openo.sdno.osdriverservice.rest.exceptionmapper.ServiceExceptionMapper" />
-            <bean class="org.openo.sdno.osdriverservice.rest.exceptionmapper.GenericExceptionMapper" />
-            <bean class="org.openo.sdno.osdriverservice.rest.exceptionmapper.OpenStackExceptionMapper" />
+            <bean class="org.openo.sdnhub.osdriverservice.rest.exceptionmapper.ServiceExceptionMapper" />
+            <bean class="org.openo.sdnhub.osdriverservice.rest.exceptionmapper.GenericExceptionMapper" />
+            <bean class="org.openo.sdnhub.osdriverservice.rest.exceptionmapper.OpenStackExceptionMapper" />
         </jaxrs:providers>
     </jaxrs:server>
 
-    <bean id="osDriverSvcIpSecRoaResource" class="org.openo.sdno.osdriverservice.rest.OsDriverSvcIpSecRoaResource">
+    <bean id="osDriverSvcIpSecRoaResource" class="org.openo.sdnhub.osdriverservice.rest.OsDriverSvcIpSecRoaResource">
     </bean>
-    <bean id="osDriverSvcVpcRoaResource" class="org.openo.sdno.osdriverservice.rest.OsDriverSvcVpcRoaResource">
+    <bean id="osDriverSvcVpcRoaResource" class="org.openo.sdnhub.osdriverservice.rest.OsDriverSvcVpcRoaResource">
     </bean>
-    <bean id="OsDriverRestModule" class="org.openo.sdno.osdriverservice.OsDriverRestModule" init-method="start"
+    <bean id="OsDriverRestModule" class="org.openo.sdnhub.osdriverservice.OsDriverRestModule" init-method="start"
         destroy-method="stop">
     </bean>
-    <bean id="daoBrs" class="org.openo.sdno.osdriverservice.dao.DaoBrs"></bean>
+    <bean id="daoBrs" class="org.openo.sdnhub.osdriverservice.dao.DaoBrs"></bean>
 
-    <bean id="daoUtil" class="org.openo.sdno.osdriverservice.util.DaoUtil">
+    <bean id="daoUtil" class="org.openo.sdnhub.osdriverservice.util.DaoUtil">
         <property name="dao" ref="daoBrs" />
     </bean>
-    <bean id="controllerUtil" class="org.openo.sdno.osdriverservice.util.ControllerUtil">
+    <bean id="controllerUtil" class="org.openo.sdnhub.osdriverservice.util.ControllerUtil">
         <property name="dao" ref="daoBrs" />
     </bean>
 </beans>
