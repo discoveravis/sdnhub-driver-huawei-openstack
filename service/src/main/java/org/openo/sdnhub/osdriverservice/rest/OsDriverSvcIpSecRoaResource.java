@@ -16,6 +16,7 @@
 
 package org.openo.sdnhub.osdriverservice.rest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,7 @@ public class OsDriverSvcIpSecRoaResource {
     IpSecNbiService service = new IpSecNbiService();
 
     /**
-     * Create IpSec connection.<br>
+     * Create IpSec connection batch.<br>
      *
      * @param request HttpServletRequest Object
      * @param ctrlUuidParam Controller Id Parameter
@@ -74,7 +75,7 @@ public class OsDriverSvcIpSecRoaResource {
     public ResultRsp<List<DcGwIpSecConnection>> createIpSec(@Context HttpServletRequest request,
             @HeaderParam("X-Driver-Parameter") String ctrlUuidParam, List<DcGwIpSecConnection> dcGwIpSecConnList)
             throws ServiceException {
-        long infterEnterTime = System.currentTimeMillis();
+        long enterTime = System.currentTimeMillis();
         String ctrlUuid = ctrlUuidParam.substring(ctrlUuidParam.indexOf('=') + 1);
 
         for(DcGwIpSecConnection dcGwIpSecConn : dcGwIpSecConnList) {
@@ -84,9 +85,34 @@ public class OsDriverSvcIpSecRoaResource {
             dcGwIpSecConn.setOperStatus(statusMap.get(osIpSec.getVpnIpSecSiteConnection().getStatus()));
         }
 
-        LOGGER.info("Exit create method. cost time = " + (System.currentTimeMillis() - infterEnterTime));
+        LOGGER.info("Exit create method. cost time = " + (System.currentTimeMillis() - enterTime));
 
         return new ResultRsp<>(ErrorCode.OVERLAYVPN_SUCCESS, dcGwIpSecConnList);
+    }
+
+    /**
+     * Create IpSec connection.<br>
+     *
+     * @param request HttpServletRequest Object
+     * @param ctrlUuidParam Controller Id Parameter
+     * @param dcGwIpSecConnList List of IpSec connections
+     * @return ResultRsp object with IpSec connection list data
+     * @throws ServiceException when create IpSec connection failed
+     * @since SDNHUB 0.5
+     */
+    @POST
+    @Path("/dc-gateway/ipsec-connections")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public ResultRsp<DcGwIpSecConnection> createIpSec(@Context HttpServletRequest request,
+            @HeaderParam("X-Driver-Parameter") String ctrlUuidParam, DcGwIpSecConnection dcGwIpSecConn)
+            throws ServiceException {
+        List<DcGwIpSecConnection> ipsecs = new ArrayList<>();
+        ipsecs.add(dcGwIpSecConn);
+        ResultRsp<List<DcGwIpSecConnection>> result = this.createIpSec(
+                request, ctrlUuidParam, ipsecs);
+
+        return new ResultRsp<>(ErrorCode.OVERLAYVPN_SUCCESS, result.getData().get(0));
     }
 
     /**
@@ -106,15 +132,16 @@ public class OsDriverSvcIpSecRoaResource {
     public ResultRsp<String> deleteIpSec(@Context HttpServletRequest request,
             @HeaderParam("X-Driver-Parameter") String ctrlUuidParam, @PathParam("ipsecconnectionid") String ipSecConnId)
             throws ServiceException {
-        long infterEnterTime = System.currentTimeMillis();
+        long enterTime = System.currentTimeMillis();
         String ctrlUuid = ctrlUuidParam.substring(ctrlUuidParam.indexOf('=') + 1);
 
         this.service.deleteIpSec(ctrlUuid, ipSecConnId);
 
-        LOGGER.info("Exit delete method. cost time = " + (System.currentTimeMillis() - infterEnterTime));
+        LOGGER.info("Exit delete method. cost time = " + (System.currentTimeMillis() - enterTime));
 
         return new ResultRsp<>();
     }
+
 
     private static Map<String, String> statusMap = new HashMap<>();
     static {

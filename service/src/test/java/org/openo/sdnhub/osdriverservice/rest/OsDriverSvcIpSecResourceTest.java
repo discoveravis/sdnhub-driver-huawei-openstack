@@ -355,10 +355,14 @@ public class OsDriverSvcIpSecResourceTest {
         dcGwIpSecConnection.setAuthMode("authMode");
         dcGwIpSecConnection.setPsk("psk");
         dcGwIpSecConnection.setPeerAddress("peerAddress");
+
+        ResultRsp<DcGwIpSecConnection> result = roaSource.createIpSec(request, "ctrlUUIT", dcGwIpSecConnection);
+        assertTrue(result.getHttpCode() == 200);
+
         List<DcGwIpSecConnection> ipSecConnList = new ArrayList<DcGwIpSecConnection>();
         ipSecConnList.add(dcGwIpSecConnection);
-        ResultRsp<List<DcGwIpSecConnection>> result = roaSource.createIpSec(request, "ctrlUUIT", ipSecConnList);
-        assertTrue(result.getHttpCode() == 200);
+        ResultRsp<List<DcGwIpSecConnection>> resultList = roaSource.createIpSec(request, "ctrlUUIT", ipSecConnList);
+        assertTrue(resultList.getHttpCode() == 200);
     }
 
     @Test(expected = ServiceException.class)
