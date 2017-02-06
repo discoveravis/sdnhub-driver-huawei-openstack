@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -576,6 +577,9 @@ public class OsDriverSvcIpSecResourceTest {
         HttpServletResponse response = new MockHttpServletResponse();
         ResultRsp<String> result = roaSource.deleteIpSec(request, "ctrlUuidParam", "ipSecConnId");
         assertTrue(result.getHttpCode() == 200);
+
+        ResultRsp<String> result1 = roaSource.deleteIpSec(request, "ctrlUuidParam", Arrays.asList(new String []{"ipSecConnId"}));
+        assertTrue(result1.getHttpCode() == 200);
     }
 
     @Test

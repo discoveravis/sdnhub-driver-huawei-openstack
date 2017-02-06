@@ -142,6 +142,34 @@ public class OsDriverSvcIpSecRoaResource {
         return new ResultRsp<>();
     }
 
+    /**
+     * Delete IpSec connection.<br>
+     *
+     * @param request HttpServletRequest Object
+     * @param ctrlUuidParam Controller Id Parameter
+     * @param ipSecConnIds IpSec connection ids
+     * @return ResultRsp object with deleting result data
+     * @throws ServiceException when delete IpSec connection failed
+     * @since SDNHUB 0.5
+     */
+    @DELETE
+    @Path("/dc-gateway/ipsec-connections/batch-delete")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public ResultRsp<String> deleteIpSec(@Context HttpServletRequest request,
+            @HeaderParam("X-Driver-Parameter") String ctrlUuidParam, @PathParam("ipsecconnectionid") List<String> ipSecConnIds)
+            throws ServiceException {
+        long enterTime = System.currentTimeMillis();
+        String ctrlUuid = ctrlUuidParam.substring(ctrlUuidParam.indexOf('=') + 1);
+
+        for (String id: ipSecConnIds) {
+            this.service.deleteIpSec(ctrlUuid, id);
+        }
+
+        LOGGER.info("Exit delete method. cost time = " + (System.currentTimeMillis() - enterTime));
+
+        return new ResultRsp<>();
+    }
 
     private static Map<String, String> statusMap = new HashMap<>();
     static {
