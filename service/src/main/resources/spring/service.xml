@@ -34,6 +34,7 @@
         <jaxrs:serviceBeans>
             <ref bean="osDriverSvcIpSecRoaResource"></ref>
             <ref bean="osDriverSvcVpcRoaResource"></ref>
+            <ref bean="healthCheckRoaResource"></ref>
         </jaxrs:serviceBeans>
         <!-- registering providers -->
         <jaxrs:providers>
@@ -59,6 +60,8 @@
     <bean id="controllerUtil" class="org.openo.sdnhub.osdriverservice.util.ControllerUtil">
         <property name="dao" ref="daoBrs" />
     </bean>
+    <bean id="healthCheckRoaResource" class="org.openo.sdno.healthcheck.rest.HealthCheckRoaResource" />
+    <bean id="checker" class="org.openo.sdno.healthcheck.service.DefaultHealthChecker" />
 </beans>
 
 
