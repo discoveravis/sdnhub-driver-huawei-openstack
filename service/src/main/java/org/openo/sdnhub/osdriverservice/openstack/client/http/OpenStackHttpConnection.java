@@ -54,6 +54,7 @@ import org.openo.sdnhub.osdriverservice.openstack.client.OpenStackServiceContext
 import org.openo.sdnhub.osdriverservice.openstack.client.OpenStackServiceType;
 import org.openo.sdnhub.osdriverservice.openstack.client.exception.OpenStackException;
 import org.openo.sdnhub.osdriverservice.openstack.utils.HttpGateKeeper;
+import org.openo.sdnhub.osdriverservice.util.OSDriverConfig;
 import org.openo.sdnhub.osdriverservice.util.TrustAllX509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,6 +76,8 @@ public class OpenStackHttpConnection {
     private static final String SSLCONTEST_TLS = "TLSV1.2";
 
     private static final String APPLICATION_JSON = "application/json";
+
+    private static final String KILO = "kilo";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenStackHttpConnection.class);
 
@@ -175,6 +178,10 @@ public class OpenStackHttpConnection {
                     + "\"user\": {\"name\": \"%s\",\"password\": \"%s\",\"domain\": {"
                     + "\"id\": \"%s\"} }, \"scope\": {\"domain\": {\"id\": \"%s\"} } } } } }";
 
+    private static String V3_TOEKN_BODY_KILO_PLUS=
+             "{\"auth\": {\"identity\": {\"methods\": [\"password\"],\"password\": {"
+                     + "\"user\": {\"name\": \"%s\",\"password\": \"%s\",\"domain\": {"
+                     + "\"name\": \"%s\"} } } }, \"scope\": {\"domain\": {\"name\": \"%s\"} } } }";
     /**
      * Constructor<br>
      *
@@ -221,8 +228,15 @@ public class OpenStackHttpConnection {
             throw new OpenStackException("Invalid credentials");
         }
 
+        String tokenJson = V3_TOKEN_BODY_DOMAIN_SCOPE;
+
+        OSDriverConfig config = new OSDriverConfig();
+        if (config.getOsVersion() != KILO) {
+            tokenJson = V3_TOEKN_BODY_KILO_PLUS;
+        }
+
         HttpInput input = new HttpInput().setUri(this.getAuthUrl() + URI_LOGIN).setMethod("post")
-                .setBody(String.format(V3_TOKEN_BODY_DOMAIN_SCOPE, this.credentials.getUsername(),
+                .setBody(String.format(tokenJson, this.credentials.getUsername(),
                         this.credentials.getPassword(), this.credentials.getDomain(), this.credentials.getDomain()));
         HttpResult result = this.commonRequest(input, true);
 

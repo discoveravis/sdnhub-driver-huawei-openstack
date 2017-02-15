@@ -33,6 +33,7 @@
         <!-- registering beans -->
         <jaxrs:serviceBeans>
             <ref bean="osDriverSvcIpSecRoaResource"></ref>
+            <ref bean="osDriverSvcIpSecRoaResourcev2"></ref>
             <ref bean="osDriverSvcVpcRoaResource"></ref>
             <ref bean="healthCheckRoaResource"></ref>
         </jaxrs:serviceBeans>
@@ -46,6 +47,8 @@
     </jaxrs:server>
 
     <bean id="osDriverSvcIpSecRoaResource" class="org.openo.sdnhub.osdriverservice.rest.OsDriverSvcIpSecRoaResource">
+    </bean>
+    <bean id="osDriverSvcIpSecRoaResourcev2" class="org.openo.sdnhub.osdriverservice.rest.v2.OsDriverSvcIpSecRoaResource">
     </bean>
     <bean id="osDriverSvcVpcRoaResource" class="org.openo.sdnhub.osdriverservice.rest.OsDriverSvcVpcRoaResource">
     </bean>
@@ -63,8 +66,3 @@
     <bean id="healthCheckRoaResource" class="org.openo.sdno.healthcheck.rest.HealthCheckRoaResource" />
     <bean id="checker" class="org.openo.sdno.healthcheck.service.DefaultHealthChecker" />
 </beans>
-
-
-
-
-

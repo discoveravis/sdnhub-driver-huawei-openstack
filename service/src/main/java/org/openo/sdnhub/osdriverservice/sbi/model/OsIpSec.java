@@ -29,6 +29,8 @@ import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnService;
  */
 public class OsIpSec {
 
+    private String vpcId;
+
     private String overlayId;
 
     private VpnIkePolicy vpnIkePolicy;
@@ -91,6 +93,14 @@ public class OsIpSec {
         this.overlayId = overlayId;
     }
 
+    public String getVpcId() {
+        return vpcId;
+    }
+
+    public void setVpcId(String vpcId) {
+        this.vpcId = vpcId;
+    }
+
 
     /**
      * Underlays class
@@ -111,6 +121,73 @@ public class OsIpSec {
 
         private String vpnIpSecSiteConnectionId = null;
 
+        private String floatingIpId = null;
+
+        private String sourceAddress = null;
+
+        private String sourceLanCidrs = null;
+
+        private String projectId = null;
+
+        private String publicNetworkId = null;
+
+        private String routerId = null;
+
+        private String publicSubnetId = null;
+
+        public String getProjectId() {
+            return this.projectId;
+        }
+
+        /**
+         * Set project ID
+         * <br>
+         *
+         * @param projectId
+         * @param action
+
+         */
+        public void setProjectId(String projectId, String action) {
+            this.put("projectId", projectId, action);
+            this.projectId = projectId;
+        }
+
+
+        public String getPublicNetworkId() {
+            return this.publicNetworkId;
+        }
+
+        /**
+         * Set public network ID
+         * <br>
+         *
+         * @param publicNetworkId
+         * @param action
+
+         */
+        public void setPublicNetworkId(String publicNetworkId, String action) {
+            this.publicNetworkId = publicNetworkId;
+            this.put("publicNetworkId", publicNetworkId, action);
+        }
+
+
+        public String getRouterId() {
+            return this.routerId;
+        }
+
+        /**
+         * Set router ID
+         * <br>
+         *
+         * @param routerId
+         * @param action
+
+         */
+        public void setRouterId(String routerId, String action) {
+            this.routerId = routerId;
+            this.put("routerId", routerId, action);
+        }
+
         public String getVpnServiceId() {
             return this.vpnServiceId;
         }
@@ -121,7 +198,7 @@ public class OsIpSec {
          *
          * @param vpnServiceId
          * @param action
-         * @since  SDNHUB 0.5
+
          */
         public void setVpnServiceId(String vpnServiceId, String action) {
             this.vpnServiceId = vpnServiceId;
@@ -139,7 +216,7 @@ public class OsIpSec {
          *
          * @param vpnIkePolicyId
          * @param action
-         * @since  SDNHUB 0.5
+
          */
         public void setVpnIkePolicyId(String vpnIkePolicyId, String action) {
             this.vpnIkePolicyId = vpnIkePolicyId;
@@ -157,7 +234,7 @@ public class OsIpSec {
          *
          * @param vpnIpSecPolicyId
          * @param action
-         * @since  SDNHUB 0.5
+
          */
         public void setVpnIpSecPolicyId(String vpnIpSecPolicyId, String action) {
             this.vpnIpSecPolicyId = vpnIpSecPolicyId;
@@ -175,11 +252,49 @@ public class OsIpSec {
          *
          * @param vpnIpSecSiteConnectionId
          * @param action
-         * @since  SDNHUB 0.5
+
          */
         public void setVpnIpSecSiteConnectionId(String vpnIpSecSiteConnectionId, String action) {
             this.vpnIpSecSiteConnectionId = vpnIpSecSiteConnectionId;
             this.put("vpnIpSecSiteConnectionId", vpnIpSecSiteConnectionId, action);
         }
+
+        public String getFloatingIpId() {
+            return floatingIpId;
+        }
+
+        public void setFloatingIpId(String floatingIpId, String action) {
+            this.floatingIpId = floatingIpId;
+            this.put("floatingIpId", floatingIpId, action);
+        }
+
+        public String getSourceAddress() {
+            return sourceAddress;
+        }
+
+        public void setSourceAddress(String sourceAddress, String action) {
+            this.sourceAddress = sourceAddress;
+            this.put("sourceAddress", sourceAddress, action);
+        }
+
+        public String getSourceLanCidrs() {
+            return sourceLanCidrs;
+        }
+
+        public void setSourceLanCidrs(String sourceLanCidrs, String action) {
+            this.sourceLanCidrs = sourceLanCidrs;
+            this.put("sourceLanCidrs", sourceLanCidrs, action);
+        }
+
+        public String getPublicSubnetId() {
+            return publicSubnetId;
+        }
+
+        public void setPublicSubnetId(String publicSubnetId, String action) {
+            this.publicSubnetId = publicSubnetId;
+            this.put("publicSubnetId", publicSubnetId, action);
+        }
+
+
     }
 }

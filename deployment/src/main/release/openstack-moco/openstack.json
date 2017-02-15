@@ -181,6 +181,16 @@
 },
 {
   "request" : {
+    "uri" : "/v2.0/floatingips",
+    "method" : "post"
+  },
+  "response" : {
+    "status" : "201",
+    "json" : {"floatingip":{"floating_network_id":"da6f6681-3beb-4249-86bd-3a95690cc28f","router_id":"d23abc8d-2991-4a55-ba98-2aaea84cc72f","fixed_ip_address":"10.0.0.3","floating_ip_address":"172.24.4.228","project_id":"4969c491a3c74ee4af974e6d800c62de","tenant_id":"4969c491a3c74ee4af974e6d800c62de","status":"ACTIVE","port_id":"ce705c24-c1ef-408a-bda3-7bbd946164ab","id":"2f245a7b-796b-4f26-9cf9-9e82d248fda7","description":"floating ip for testing","created_at":"2016-12-21T01:36:04Z","updated_at":"2016-12-21T01:36:04Z","revision_number":1}}
+  }
+},
+{
+  "request" : {
     "uri" : "/v2.0/networks",
     "method" : "get"
   },
@@ -296,7 +306,7 @@
   },
   "response" : {
     "status" : "200",
-    "json" : {"subnets": []}
+    "json" : {"subnets": [{"description": "", "enable_dhcp": true, "network_id": "da6f6681-3beb-4249-86bd-3a95690cc28f", "tenant_id": "00e55b6d14cd49709b71ffa83e5ee37f", "created_at": "2016-08-08T07:42:20", "dns_nameservers": [], "updated_at": "2016-08-08T07:42:20", "gateway_ip": "10.11.0.1", "ipv6_ra_mode": null, "allocation_pools": [{"start": "10.11.0.2", "end": "10.11.0.254"}], "host_routes": [], "ip_version": 4, "ipv6_address_mode": null, "cidr": "10.11.0.0/24", "id": "4bb48d3c-f53f-46b5-a3da-c7c70d4cd726", "subnetpool_id": null, "name": "sdno_6fc00cf5-ff29-4f45-a8a6-f03d73674412"}]}
   }
 }
 ]

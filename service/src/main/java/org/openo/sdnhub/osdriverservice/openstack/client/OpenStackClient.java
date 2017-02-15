@@ -27,6 +27,7 @@ import org.openo.sdnhub.osdriverservice.openstack.client.exception.OpenStackExce
 import org.openo.sdnhub.osdriverservice.openstack.client.http.HttpInput;
 import org.openo.sdnhub.osdriverservice.openstack.client.http.HttpResult;
 import org.openo.sdnhub.osdriverservice.openstack.client.http.OpenStackHttpConnection;
+import org.openo.sdnhub.osdriverservice.openstack.client.model.FloatingIp;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.Network;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.Project;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.Router;
@@ -53,6 +54,8 @@ public class OpenStackClient {
     private static final String URI_SUBNET = "/subnets";
 
     private static final String URI_ROUTER = "/routers";
+
+    private static final String URI_FLOATING_IP = "/floatingips";
 
     private static final String URI_ROUTER_INTERFACE_ADD = URI_ROUTER + "/{0}/add_router_interface";
 
@@ -414,6 +417,22 @@ public class OpenStackClient {
     }
 
     /**
+     * Gets OpenStack Subnet by netowrk id.
+     * Version {@value #NETWORK_V2}
+     * URI: {@value #URI_SUBNET}?name=<name>
+     * <br>
+     *
+     * @param name OpenStack Subnet name
+     * @return
+     * @throws OpenStackException Throws exception if the operation fails.
+     * @since SDNHUB 0.5
+     */
+    public List<Subnet> listSubnetForNetowrkId(String networkId) throws OpenStackException {
+        return this.list(OpenStackClient.NEWORK_V2, OpenStackClient.URI_SUBNET + "?network_id=" + networkId, Subnet.class,
+                "subnets");
+    }
+
+    /**
      * Deletes OpenStack Subnet
      * Version {@value #NETWORK_V2}
      * URI: {@value #URI_SUBNET}/<subnetId>
@@ -478,6 +497,35 @@ public class OpenStackClient {
      */
     public void deleteRouter(String routerId) throws OpenStackException {
         this.delete(OpenStackClient.NEWORK_V2, OpenStackClient.URI_ROUTER + "/" + routerId);
+    }
+
+    /**
+     * Creates OpenStack Floating ip.
+     * Version {@value #NETWORK_V2}
+     * URI: {@value #URI_FLOATING_IP}
+     * <br>
+     *
+     * @param floatingIp {@link FloatingIp}
+     * @return
+     * @throws OpenStackException Throws exception if the operation fails.
+     * @since SDNHUB 0.5
+     */
+    public FloatingIp createFloatingIp(FloatingIp floatingIp) throws OpenStackException {
+        return this.post(OpenStackClient.NEWORK_V2, OpenStackClient.URI_FLOATING_IP, floatingIp);
+    }
+
+    /**
+     * Deletes OpenStack Floating ip.
+     * Version {@value #NETWORK_V2}
+     * URI: {@value #URI_FLOATING_IP}/<floatingIpId>
+     * <br>
+     *
+     * @param floatingIpId
+     * @throws OpenStackException Throws exception if the operation fails.
+     * @since SDNHUB 0.5
+     */
+    public void deleteFloatingIp(String floatingIpId) throws OpenStackException {
+        this.delete(OpenStackClient.NEWORK_V2, OpenStackClient.URI_FLOATING_IP + "/" + floatingIpId);
     }
 
     private void handleSubnetToRouterInterface(String uri, Router router, Subnet subnet) throws OpenStackException {
@@ -620,6 +668,23 @@ public class OpenStackClient {
 
     }
 
+    /**
+     * Update OpenStack VPN IpSec site connection.
+     * Version {@value #NETWORK_V2}
+     * URI: {@value #URI_IPSEC_SITE_CONN}
+     * <br>
+     *
+     * @param connection {@link VpnIpSecSiteConnection}
+     * @param connId String connection id
+     * @return
+     * @throws OpenStackException Throws exception if the operation fails.
+     * @since SDNHUB 0.5
+     */
+    public VpnIpSecSiteConnection updateVpnIpSecSiteConnection(String connId, VpnIpSecSiteConnection connection)
+            throws OpenStackException {
+        return this.put(NEWORK_V2, URI_IPSEC_SITE_CONN + "/" + connId, connection);
+
+    }
     /**
      * Deletes OpenStack VPN IpSec site connection.
      * Version {@value #NETWORK_V2}

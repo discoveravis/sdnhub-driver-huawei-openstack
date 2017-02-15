@@ -166,6 +166,16 @@ public class OSDriverConfig {
         return properties.getProperty("driver.name");
     }
 
+    /**
+     * Get OS version <br/>
+     *
+     * @return OSDriver name
+     * @since SDNHUB 0.5
+     */
+    public String getOsVersion() {
+        return properties.getProperty("os.version");
+    }
+
     private void loadProperties() {
         try {
             FileInputStream fin = new FileInputStream(OSDriverConfig.class

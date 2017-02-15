@@ -16,13 +16,22 @@
 
 package org.openo.sdnhub.osdriverservice.sbi;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openo.baseservice.remoteservice.exception.ServiceException;
+import org.openo.sdnhub.osdriverservice.nbi.model.SbiIp;
 import org.openo.sdnhub.osdriverservice.openstack.client.OpenStackClient;
 import org.openo.sdnhub.osdriverservice.openstack.client.exception.OpenStackException;
+import org.openo.sdnhub.osdriverservice.openstack.client.model.FloatingIp;
+import org.openo.sdnhub.osdriverservice.openstack.client.model.Subnet;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnIkePolicy;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnIpSecPolicy;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnIpSecSiteConnection;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnService;
+import org.openo.sdnhub.osdriverservice.openstack.utils.JsonUtil;
 import org.openo.sdnhub.osdriverservice.sbi.model.OsIpSec;
+
 
 /**
  * Class for creating VPC service.<br>
@@ -46,18 +55,59 @@ public class IpSecSbiService {
         this.client = client;
     }
 
-    /**
+     /**
      * <br>
      *
      * @param ipsec IPSec service object to be created.
      * @return
      * @throws OpenStackException
+     * @throws ServiceException
      * @since SDNHUB 0.5
      */
     public OsIpSec createIpSec(OsIpSec ipsec) throws OpenStackException {
         this.client.login();
-
         OsIpSec.Underlays underlays = ipsec.getAttributes();
+
+        if (ipsec.getVpcId() != null) {
+            //set all tenant id
+            ipsec.getVpnIkePolicy().setTenantId(underlays.getProjectId());
+            if (ipsec.getVpnIpSecPolicy() != null) {
+                ipsec.getVpnIpSecPolicy().setTenantId(underlays.getProjectId());
+            }
+            ipsec.getVpnService().setTenantId(underlays.getProjectId());
+            ipsec.getVpnIpSecSiteConnection().setTenantId(underlays.getProjectId());
+
+            if (underlays.getFloatingIpId() == null) {
+                //Create the floating ip
+                FloatingIp ip = new FloatingIp();
+                ip.setNetworkId(underlays.getPublicNetworkId());
+                ip.setProjectId(underlays.getProjectId());
+
+                client.createFloatingIp(ip);
+
+                underlays.setFloatingIpId(ip.getId(), "c");
+
+                SbiIp sourceIp = new SbiIp();
+                sourceIp.setIpv4(ip.getIpAddress());
+                sourceIp.setIpMask("32");
+                underlays.setSourceAddress(JsonUtil.toJson(sourceIp), "u");
+
+                List<Subnet> subnets = client.listSubnetForNetowrkId(ip.getNetworkId());
+
+                //update the vpn subnet id
+                ipsec.getVpnService().setSubnetId(subnets.get(0).getId());
+
+                List <SbiIp> sourceCidrs = new ArrayList<>();
+                for (Subnet subnet: subnets) {
+                    String []tokens = subnet.getCidr().split("/");
+                    SbiIp ipa = new SbiIp();
+                    ipa.setIpv4(tokens[0]);
+                    ipa.setIpMask(tokens[1]);
+                    sourceCidrs.add(ipa);
+                }
+                underlays.setSourceLanCidrs(JsonUtil.toJson(sourceCidrs), "u");
+            }
+        }
 
         if(underlays.getVpnIkePolicyId() == null) {
             VpnIkePolicy ike = this.client.createVpnIkePolicy(ipsec.getVpnIkePolicy());
@@ -94,6 +144,25 @@ public class IpSecSbiService {
     }
 
     /**
+     * Update Ipsec peer cidrs<br>
+     *
+     * @param ipsec IPSec service object to be created.
+     * @return
+     * @throws OpenStackException
+     * @since SDNHUB 0.5
+     */
+    public OsIpSec updateIpSec(String ipSecId, OsIpSec ipsec) throws OpenStackException {
+        this.client.login();
+
+        VpnIpSecSiteConnection conn = ipsec.getVpnIpSecSiteConnection();
+        conn = this.client.updateVpnIpSecSiteConnection(ipsec.getAttributes().getVpnIpSecSiteConnectionId(), ipsec.getVpnIpSecSiteConnection());
+        ipsec.setVpnIpSecSiteConnection(conn);
+
+        this.client.logout();
+
+        return ipsec;
+    }
+    /**
      * Delete IpSec
      * <br>
      *
@@ -118,6 +187,11 @@ public class IpSecSbiService {
 
             this.client.deleteVpnIpSecPolicy(underlays.getVpnIpSecPolicyId());
             underlays.setVpnIpSecPolicyId(underlays.getVpnIpSecPolicyId(), "d");
+
+            if (underlays.getFloatingIpId() != null) {
+                this.client.deleteFloatingIp(underlays.getFloatingIpId());
+                underlays.setFloatingIpId(underlays.getFloatingIpId(), "d");
+            }
         } catch(OpenStackException e) {
             if(e.getHttpCode() != 404) {
                 throw e;

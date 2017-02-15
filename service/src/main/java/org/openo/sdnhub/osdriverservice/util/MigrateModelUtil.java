@@ -24,6 +24,9 @@ import java.util.UUID;
 
 import org.openo.baseservice.remoteservice.exception.ServiceException;
 import org.openo.sdnhub.osdriverservice.dao.model.OverlayUnderlayMapping;
+import org.openo.sdnhub.osdriverservice.nbi.model.SbiIkePolicy;
+import org.openo.sdnhub.osdriverservice.nbi.model.SbiIpSecPolicy;
+import org.openo.sdnhub.osdriverservice.nbi.model.SbiNeIpSec;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnDpd;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnIkePolicy;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnIpSecPolicy;
@@ -39,6 +42,7 @@ import org.openo.sdno.overlayvpn.model.ipsec.IpSecPolicy;
 import org.openo.sdno.overlayvpn.model.netmodel.ipsec.DcGwIpSecConnection;
 import org.openo.sdno.overlayvpn.model.netmodel.vpc.Subnet;
 import org.openo.sdno.overlayvpn.model.netmodel.vpc.Vpc;
+
 
 /**
  * Model converting class, converting SDNO model to adapter model.<br>
@@ -201,6 +205,129 @@ public class MigrateModelUtil {
         return conn;
     }
 
+    // ************************************v2 ********************************************
+    public static OsIpSec convert(SbiNeIpSec dcGwIpSecConnection) {
+
+        OsIpSec ipsec = new OsIpSec();
+        ipsec.setOverlayId(dcGwIpSecConnection.getUuid());
+        ipsec.setVpcId(dcGwIpSecConnection.getNeId());
+        ipsec.setVpnIkePolicy(convertIke(dcGwIpSecConnection));
+        ipsec.setVpnIpSecPolicy(convertIpSec(dcGwIpSecConnection));
+        ipsec.setVpnService(convertVpn(dcGwIpSecConnection));
+        ipsec.setVpnIpSecSiteConnection(convertConn(dcGwIpSecConnection));
+
+        return ipsec;
+    }
+
+    /**
+     * convert
+     * <br>
+     *
+     * @param ikePolicy
+     * @return
+     * @since SDNHUB 0.5
+     */
+    private static VpnIkePolicy convertIke(SbiNeIpSec dcGwIpSecConnection) {
+        SbiIkePolicy ikePolicy = dcGwIpSecConnection.getIkePolicy();
+
+        VpnIkePolicy ike = new VpnIkePolicy();
+        ike.setDescription(dcGwIpSecConnection.getName());
+        ike.setTenantId(dcGwIpSecConnection.getTenantId());
+        ike.setName(dcGwIpSecConnection.getName());
+        ike.setAuthAlgorithm(ikePolicy.getAuthAlgorithm());
+        ike.setEncryptionAlgorithm(ikePolicy.getEncryptionAlgorithm());
+        ike.setPfs(ikePolicy.getPfs().toLowerCase());
+        ike.setIkeVersion(ikePolicy.getIkeVersion());
+
+        return ike;
+    }
+
+    /**
+     * convert
+     * <br>
+     *
+     * @param ipSecPolicy
+     * @return
+     * @since SDNHUB 0.5
+     */
+    private static VpnIpSecPolicy convertIpSec(SbiNeIpSec dcGwIpSecConnection) {
+        SbiIpSecPolicy ipSecPolicy = dcGwIpSecConnection.getIpSecPolicy();
+
+        if (ipSecPolicy == null) {
+            return null;
+        }
+
+        VpnIpSecPolicy ipsec = new VpnIpSecPolicy();
+        ipsec.setDescription(dcGwIpSecConnection.getName());
+        ipsec.setName(dcGwIpSecConnection.getName());
+        ipsec.setTransformProtocol(ipSecPolicy.getTransformProtocol().toLowerCase());
+        ipsec.setAuthAlgorithm(ipSecPolicy.getAuthAlgorithm());
+        ipsec.setEncapsulationMode(ipSecPolicy.getEncapsulationMode());
+        ipsec.setEncryptionAlgorithm(ipSecPolicy.getEncryptionAlgorithm());
+
+        ipsec.setPfs(ipSecPolicy.getPfs());
+        ipsec.setTenantId(dcGwIpSecConnection.getTenantId());
+
+
+        return ipsec;
+    }
+
+    /**
+     * convert1
+     * <br>
+     *
+     * @param dcGwIpSecConnection
+     * @return
+     * @since SDNHUB 0.5
+     */
+    private static VpnService convertVpn(SbiNeIpSec dcGwIpSecConnection) {
+        VpnService vpn = new VpnService();
+        vpn.setDescription(dcGwIpSecConnection.getName());
+        vpn.setTenantId(dcGwIpSecConnection.getTenantId());
+        //it will get set at sbi layer
+        vpn.setRouterId(null);
+        //it will get set at sbi layer
+        vpn.setSubnetId(null);
+        vpn.setAdminStateUp(true);
+        vpn.setName(dcGwIpSecConnection.getName());
+        vpn.setDescription(dcGwIpSecConnection.getName());
+
+        return vpn;
+    }
+
+    /**
+     * convert2
+     * <br>
+     *
+     * @param dcGwIpSecConnection
+     * @return
+     * @since SDNHUB 0.5
+     */
+    private static VpnIpSecSiteConnection convertConn(SbiNeIpSec dcGwIpSecConnection) {
+        String[] peerCidrArr = dcGwIpSecConnection.getPeerLanCidrs().split(",");
+        List<String> peerCidrList = new ArrayList<>();
+        for(String peerCidr : peerCidrArr) {
+            peerCidrList.add(peerCidr);
+        }
+
+        VpnIpSecSiteConnection conn = new VpnIpSecSiteConnection();
+        conn.setDescription(dcGwIpSecConnection.getName());
+        conn.setTenantId(dcGwIpSecConnection.getTenantId());
+        conn.setAdminStateUp(true);
+        conn.setName(dcGwIpSecConnection.getName());
+        conn.setPeerAddress(dcGwIpSecConnection.getPeerAddress());
+        conn.setPeerId(dcGwIpSecConnection.getPeerAddress());
+        conn.setPeerCidrs(peerCidrList);
+        //TODO(mrkanag): add decryption if required here
+        conn.setPsk(dcGwIpSecConnection.getIkePolicy().getPsk());
+
+        conn.setSubnets(null);
+
+        return conn;
+    }
+
+    // ************************************v2 ********************************************
+
     /**
      * convert
      * <br>
@@ -299,6 +426,20 @@ public class MigrateModelUtil {
                 underlays.setVpnServiceId(mapping.getUnderlayId(), mapping.getAction());
             } else if("vpnIpSecSiteConnectionId".equals(mapping.getUnderlayType())) {
                 underlays.setVpnIpSecSiteConnectionId(mapping.getUnderlayId(), mapping.getAction());
+            } else if("floatingIpId".equals(mapping.getUnderlayType())) {
+                underlays.setFloatingIpId(mapping.getUnderlayId(), mapping.getAction());
+            } else if("sourceAddress".equals(mapping.getUnderlayType())) {
+                underlays.setSourceAddress(mapping.getUnderlayId(), mapping.getAction());
+            } else if("sourceLanCidrs".equals(mapping.getUnderlayType())) {
+                underlays.setSourceLanCidrs(mapping.getUnderlayId(), mapping.getAction());
+            } else if("projectId".equals(mapping.getUnderlayType())) {
+                underlays.setProjectId(mapping.getUnderlayId(), mapping.getAction());
+            } else if("publicNetworkId".equals(mapping.getUnderlayType())) {
+                underlays.setPublicNetworkId(mapping.getUnderlayId(), mapping.getAction());
+            } else if("routerId".equals(mapping.getUnderlayType())) {
+                underlays.setRouterId(mapping.getUnderlayId(), mapping.getAction());
+            } else if("publicSubnetId".equals(mapping.getUnderlayType())) {
+                underlays.setPublicSubnetId(mapping.getUnderlayId(), mapping.getAction());
             }
         }
 

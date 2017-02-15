@@ -24,6 +24,7 @@ import org.openo.sdnhub.osdriverservice.openstack.client.OpenStackClient;
 import org.openo.sdnhub.osdriverservice.openstack.client.exception.OpenStackException;
 import org.openo.sdnhub.osdriverservice.sbi.IpSecSbiService;
 import org.openo.sdnhub.osdriverservice.sbi.model.OsIpSec;
+import org.openo.sdnhub.osdriverservice.sbi.model.OsVpc;
 import org.openo.sdnhub.osdriverservice.util.ControllerUtil;
 import org.openo.sdnhub.osdriverservice.util.DaoUtil;
 import org.openo.sdnhub.osdriverservice.util.MigrateModelUtil;
@@ -53,8 +54,17 @@ public class IpSecNbiService {
      * @throws ServiceException when create IpSec failed
      */
     public OsIpSec createIpSec(String ctrlUuid, OsIpSec ipsec) throws ServiceException {
-
         try {
+            if (ipsec.getVpcId() != null) {
+                if (ipsec.getVpnService().getSubnetId() == null) {
+                    List<OverlayUnderlayMapping> mappings = DaoUtil.getChildren(OverlayUnderlayMapping.class, ipsec.getVpcId());
+                    OsVpc.Underlays vpcunderlays = MigrateModelUtil.convert(mappings);
+                    ipsec.getAttributes().setPublicNetworkId(vpcunderlays.getPublicNetworkId(), "u");
+                    ipsec.getAttributes().setRouterId(vpcunderlays.getRouterId(), "u");
+                    ipsec.getAttributes().setProjectId(vpcunderlays.getProjectId(), "u");
+                }
+            }
+
             OpenStackClient client = ControllerUtil.createOpenStackClient(ctrlUuid);
             IpSecSbiService vpcSrv = new IpSecSbiService(client);
             ipsec = vpcSrv.createIpSec(ipsec);
@@ -70,6 +80,27 @@ public class IpSecNbiService {
         }
 
         return ipsec;
+    }
+
+    /**
+     * Update IpSec.
+     *
+     * @param ctrlUuid Controller UUid
+     * @param ipSecId IpSec Object UUid
+     * @param ipsec OsIpSec conection
+     * @throws ServiceException when delete IpSec failed
+     */
+    public OsIpSec updateIpSec(String ctrlUuid, String ipSecId, OsIpSec ipsec) throws ServiceException {
+        List<OverlayUnderlayMapping> mappings = DaoUtil.getChildren(OverlayUnderlayMapping.class, ipSecId);
+        OsIpSec.Underlays underlays = MigrateModelUtil.convert2(mappings);
+        ipsec.setAttributes(underlays);
+        try {
+            OpenStackClient client = ControllerUtil.createOpenStackClient(ctrlUuid);
+            IpSecSbiService vpcSrv = new IpSecSbiService(client);
+            return vpcSrv.updateIpSec(ipSecId, ipsec);
+        } catch(OpenStackException e) {
+            throw new ServiceException(e);
+        }
     }
 
     /**
