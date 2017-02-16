@@ -1,7 +1,7 @@
 {
     "driverInfo": {
-        "driverName": "sdnoopenstackdriver-0-1",
-        "instanceID": "sdnoopenstackdriver-0-1",
+        "driverName": "sdnhubopenstackdriver-0-1",
+        "instanceID": "sdnhubopenstackdriver-0-1",
         "ip": "",
         "port": "8539",
         "protocol": "http",
@@ -17,6 +17,15 @@
             },
             {
                 "service_url": "/openoapi/sbi-ipsec/v1",
+                "support_sys": [
+                    {
+                        "type": "openstack",
+                        "version": "V200R001C00"
+                    }
+                ]
+            },
+            {
+                "service_url": "/openoapi/sdnhubopenstackdriver",
                 "support_sys": [
                     {
                         "type": "openstack",

@@ -1,6 +1,6 @@
 {
     "request": {
-        "uri": "http://localhost:8088/openstackdriverservice/openoapi/healthcheck",
+        "uri": "http://localhost:8088/openstackdriverservice/openoapi/sdnhubopenstackdriver/healthcheck",
         "method": "get",
         "headers": {
             "Content-Type": "application/json"
