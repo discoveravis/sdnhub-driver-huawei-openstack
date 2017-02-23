@@ -40,6 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import io.swagger.annotations.*;
+
 /**
  * Restful interface class for OS driver VPC.<br>
  *
@@ -48,6 +50,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Path("/sbi-vpc/v1")
+@Api(value = "/vpcs")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJAXRSSpecServerCodegen")
 public class OsDriverSvcVpcRoaResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsDriverSvcVpcRoaResource.class);
@@ -73,6 +77,15 @@ public class OsDriverSvcVpcRoaResource {
     @Path("/vpcs")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Create VPC .", notes = "Create VPC.", response = void.class, tags = {})
+    @ApiResponses(value = {
+                    @ApiResponse(code = 201, message = "VPC creation success.", response = Vpc.class),
+                    @ApiResponse(code = 400, message = "Vpc resource provided in body is missing with required properties.", response = void.class),
+                    @ApiResponse(code = 401, message = "Unauthorized.", response = void.class),
+                    @ApiResponse(code = 404, message = "Not found.", response = void.class),
+                    @ApiResponse(code = 500, message = "internal server error.", response = void.class)})
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "vpc", value = "VPC to be created.", required = true,  paramType = "body", dataType = "org.openo.sdno.overlayvpn.model.netmodel.vpc.Vpc")})
     public Vpc createVpc(@Context HttpServletRequest request, @Context HttpServletResponse response,
             @HeaderParam("X-Driver-Parameter") String ctrlUuidParam, Vpc vpc) throws ServiceException {
 
@@ -110,6 +123,10 @@ public class OsDriverSvcVpcRoaResource {
     @Path("/vpcs/{vpc_id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Delete VPC .", notes = "Delete VPC.", tags = {})
+    @ApiResponses(value = {
+                    @ApiResponse(code = 204, message = "VPC deleted successfully.", response = void.class),
+                    @ApiResponse(code = 500, message = "internal server error.", response = void.class)})
     public void deleteVpc(@Context HttpServletRequest request, @Context HttpServletResponse response,
             @HeaderParam("X-Driver-Parameter") String ctrlUuidParam, @PathParam("vpc_id") String vpcId)
             throws ServiceException {
@@ -142,6 +159,15 @@ public class OsDriverSvcVpcRoaResource {
     @Path("/subnets")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Create Subnet .", notes = "Create Subnet.", response = void.class, tags = {})
+    @ApiResponses(value = {
+                    @ApiResponse(code = 201, message = "Subnet creation success.", response = Subnet.class),
+                    @ApiResponse(code = 400, message = "Subnet resource provided in body is missing with required properties.", response = void.class),
+                    @ApiResponse(code = 401, message = "Unauthorized.", response = void.class),
+                    @ApiResponse(code = 404, message = "Not found.", response = void.class),
+                    @ApiResponse(code = 500, message = "internal server error.", response = void.class)})
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "subnet", value = "Subnet to be created.", required = true,  paramType = "body", dataType = "org.openo.sdno.overlayvpn.model.netmodel.vpc.Subnet")})
     public Subnet createSubnet(@Context HttpServletRequest request, @Context HttpServletResponse response,
             @HeaderParam("X-Driver-Parameter") String ctrlUuidParam, Subnet subnet) throws ServiceException {
 
@@ -180,6 +206,10 @@ public class OsDriverSvcVpcRoaResource {
     @Path("/subnets/{subnet_id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Delete VPC .", notes = "Delete VPC.", tags = {})
+    @ApiResponses(value = {
+                    @ApiResponse(code = 204, message = "VPC creation success.", response = void.class),
+                    @ApiResponse(code = 500, message = "internal server error.", response = void.class)})
     public void deleteSubnet(@Context HttpServletRequest request, @Context HttpServletResponse response,
             @HeaderParam("X-Driver-Parameter") String ctrlUuidParam, @PathParam("subnet_id") String subnetId)
             throws ServiceException {

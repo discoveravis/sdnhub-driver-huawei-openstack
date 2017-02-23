@@ -28,28 +28,25 @@ import org.openo.sdno.testframework.http.model.HttpResponse;
 import org.openo.sdno.testframework.http.model.HttpRquestResponse;
 import org.openo.sdno.testframework.testmanager.TestManager;
 
-public class ITSuccess extends TestManager {
+public class ITIpSecFail extends TestManager {
 
-    private static final String CREATE_VPC_SUCCESS_TESTCASE =
-            "src/integration-test/resources/testcase_jsons/createvpcsuccess.json";
+    private static final String CREATE_IPSEC_FAIL_TESTCASE =
+            "src/integration-test/resources/testcase_jsons/createIpSecV2Fail.json";
+    private static final String DELETE_IPSEC_FAIL_TESTCASE =
+            "src/integration-test/resources/testcase_jsons/deleteIpSecV2Fail.json";
+    private static final String UPDATE_IPSEC_FAIL_TESTCASE =
+            "src/integration-test/resources/testcase_jsons/updateIpSecV2Fail.json";
+    private static final String CREATE_IPSEC_INVALIDIP =
+            "src/integration-test/resources/testcase_jsons/createIpSecV2InvalidIp.json";
+    private static final String DELETE_IPSEC_INVALIDIP =
+            "src/integration-test/resources/testcase_jsons/deleteIpSecV2InvalidIp.json";
+    private static final String UPDATE_IPSEC_INVALIDIP =
+            "src/integration-test/resources/testcase_jsons/updateIpSecV2InvalidIp.json";
 
-    private static final String CREATE_SUBNET_SUCCESS_TESTCASE =
-            "src/integration-test/resources/testcase_jsons/createsubnetsuccess.json";
-
-    private static final String DELETE_VPC_SUCCESS_TESTCASE =
-            "src/integration-test/resources/testcase_jsons/deletevpcsuccess.json";
-
-    private static final String DELETE_SUBNET_SUCCESS_TESTCASE =
-            "src/integration-test/resources/testcase_jsons/deletesubnetsuccess.json";
-
-    private static final String CREATE_IPSEC_SUCCESS_TESTCASE =
-            "src/integration-test/resources/testcase_jsons/createipsecsuccess.json";
-
-    private static final String DELETE_IPSEC_SUCCESS_TESTCASE =
-            "src/integration-test/resources/testcase_jsons/deleteipsecsuccess.json";
 
     private static String[] mockJsonsOpenStack =
-            new String[] {"src/integration-test/resources/openstack_mock_jsons/auth_token.json",
+            new String[]
+                    {
                     "src/integration-test/resources/openstack_mock_jsons/project_create.json",
                     "src/integration-test/resources/openstack_mock_jsons/project_list.json",
                     "src/integration-test/resources/openstack_mock_jsons/project_delete.json",
@@ -60,7 +57,6 @@ public class ITSuccess extends TestManager {
                     "src/integration-test/resources/openstack_mock_jsons/router_list.json",
                     "src/integration-test/resources/openstack_mock_jsons/router_delete.json",
                     "src/integration-test/resources/openstack_mock_jsons/router_create.json",
-                    "src/integration-test/resources/openstack_mock_jsons/subnet_list.json",
                     "src/integration-test/resources/openstack_mock_jsons/subnet_delete.json",
                     "src/integration-test/resources/openstack_mock_jsons/subnet_create.json",
                     "src/integration-test/resources/openstack_mock_jsons/subnet_attach.json",
@@ -74,23 +70,24 @@ public class ITSuccess extends TestManager {
                     "src/integration-test/resources/openstack_mock_jsons/deleteikepolicy.json",
                     "src/integration-test/resources/openstack_mock_jsons/deletevpnservice.json",
                     "src/integration-test/resources/openstack_mock_jsons/deleteipsecconn.json",
-                    "src/integration-test/resources/openstack_mock_jsons/auth_projects.json"};
+                    "src/integration-test/resources/openstack_mock_jsons/auth_token.json",
+                    "src/integration-test/resources/openstack_mock_jsons/auth_projects.json",
+                    "src/test/resources/openstack_mock_jsons/floatingip_create.json",
+                    "src/integration-test/resources/openstack_mock_jsons/subnet_list2.json",
+                    "src/integration-test/resources/openstack_mock_jsons/updateipsecconn.json"
 
-    private static String[] mockJsonsEsrs =
-            new String[] {"src/integration-test/resources/esr_mock_jsons/esr_controller.json"};
+    };
 
     private static String[] mockJsonsBrs =
             new String[] {"src/integration-test/resources/brs_mock_jsons/create_object.json",
                             "src/integration-test/resources/brs_mock_jsons/delete_object.json",
                             "src/integration-test/resources/brs_mock_jsons/query_object.json"};
 
-
     private static GenericMockServer mocoServer = new GenericMockServer();
 
     @BeforeClass
     public static void setup() throws ServiceException {
         mocoServer.addMockJsons(mockJsonsOpenStack);
-        mocoServer.addMockJsons(mockJsonsEsrs);
         mocoServer.addMockJsons(mockJsonsBrs);
         mocoServer.start();
     }
@@ -101,72 +98,58 @@ public class ITSuccess extends TestManager {
     }
 
     @Test
-    public void checkVpcCreate() throws ServiceException {
+    public void checkIpsecCreate() throws ServiceException {
         HttpRquestResponse httpCreateObject =
-                HttpModelUtils.praseHttpRquestResponseFromFile(CREATE_VPC_SUCCESS_TESTCASE);
+                HttpModelUtils.praseHttpRquestResponseFromFile(CREATE_IPSEC_FAIL_TESTCASE);
         HttpRequest createRequest = httpCreateObject.getRequest();
-        execTestCase(createRequest, new SuccessChecker());
+        execTestCase(createRequest, new FailChecker());
     }
 
     @Test
-    public void checkVpcDelete() throws ServiceException {
-        HttpRquestResponse deleteHttpObject =
-                HttpModelUtils.praseHttpRquestResponseFromFile(DELETE_VPC_SUCCESS_TESTCASE);
-        HttpRequest deleteRequest = deleteHttpObject.getRequest();
-        execTestCase(deleteRequest, new SuccessChecker());
-    }
-
-    @Test
-    public void checkSubnetCreate() throws ServiceException {
+    public void checkIpsecDelete() throws ServiceException {
         HttpRquestResponse httpCreateObject =
-                HttpModelUtils.praseHttpRquestResponseFromFile(CREATE_SUBNET_SUCCESS_TESTCASE);
+                HttpModelUtils.praseHttpRquestResponseFromFile(DELETE_IPSEC_FAIL_TESTCASE);
         HttpRequest createRequest = httpCreateObject.getRequest();
-        execTestCase(createRequest, new SuccessChecker());
+        execTestCase(createRequest, new FailChecker());
     }
 
     @Test
-    public void checkSubnetDelete() throws ServiceException {
-        HttpRquestResponse deleteHttpObject =
-                HttpModelUtils.praseHttpRquestResponseFromFile(DELETE_SUBNET_SUCCESS_TESTCASE);
-        HttpRequest deleteRequest = deleteHttpObject.getRequest();
-        execTestCase(deleteRequest, new SuccessChecker());
-    }
-
-    @Test
-    public void checkIpSecCreate() throws ServiceException {
+    public void checkIpsecUpdate() throws ServiceException {
         HttpRquestResponse httpCreateObject =
-                HttpModelUtils.praseHttpRquestResponseFromFile(CREATE_IPSEC_SUCCESS_TESTCASE);
+                HttpModelUtils.praseHttpRquestResponseFromFile(UPDATE_IPSEC_FAIL_TESTCASE);
         HttpRequest createRequest = httpCreateObject.getRequest();
-        execTestCase(createRequest, new SuccessChecker());
+        execTestCase(createRequest, new FailChecker());
     }
 
     @Test
-    public void checkIpSecDelete() throws ServiceException {
-        HttpRquestResponse deleteHttpObject =
-                HttpModelUtils.praseHttpRquestResponseFromFile(DELETE_IPSEC_SUCCESS_TESTCASE);
-        HttpRequest deleteRequest = deleteHttpObject.getRequest();
-        execTestCase(deleteRequest, new SuccessChecker());
+    public void checkIpsecCreateFail() throws ServiceException {
+        HttpRquestResponse httpCreateObject =
+                HttpModelUtils.praseHttpRquestResponseFromFile(CREATE_IPSEC_INVALIDIP);
+        HttpRequest createRequest = httpCreateObject.getRequest();
+        execTestCase(createRequest, new FailChecker());
     }
-    /*@Test
-    public void testOsdriverSuccessOperations() throws ServiceException {
 
-        try {
-            //this.checkVpcCreate();
-            this.checkSubnetCreate();
-            //this.checkIpSecCreate();
-            //this.checkIpSecDelete();
-            //this.checkSubnetDelete();
-            //this.checkVpcDelete();
-        } finally {
-        //NOSONAR
-        }
-    }*/
+    @Test
+    public void checkIpsecDeleteFail() throws ServiceException {
+        HttpRquestResponse httpCreateObject =
+                HttpModelUtils.praseHttpRquestResponseFromFile(DELETE_IPSEC_INVALIDIP);
+        HttpRequest createRequest = httpCreateObject.getRequest();
+        execTestCase(createRequest, new FailChecker());
+    }
 
-    private class SuccessChecker implements IChecker {
+    @Test
+    public void checkIpsecUpdateFail() throws ServiceException {
+        HttpRquestResponse httpCreateObject =
+                HttpModelUtils.praseHttpRquestResponseFromFile(UPDATE_IPSEC_INVALIDIP);
+        HttpRequest createRequest = httpCreateObject.getRequest();
+        execTestCase(createRequest, new FailChecker());
+    }
+
+    private class FailChecker implements IChecker {
 
         @Override
         public boolean check(HttpResponse response) {
-            if(response.getStatus() >= 200 && response.getStatus() <= 204) {
+            if(response.getStatus() >= 500) {
                 return true;
             }
             return false;

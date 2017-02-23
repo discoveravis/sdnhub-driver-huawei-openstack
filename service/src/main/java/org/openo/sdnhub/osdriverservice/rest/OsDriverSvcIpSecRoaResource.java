@@ -44,6 +44,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import io.swagger.annotations.*;
+
 /**
  * Restful interface class for OS driver.<br>
  *
@@ -52,6 +54,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Path("/sbi-ipsec/v1")
+@Api(value = "IPSec Service")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJAXRSSpecServerCodegen")
 public class OsDriverSvcIpSecRoaResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsDriverSvcIpSecRoaResource.class);
@@ -72,6 +76,16 @@ public class OsDriverSvcIpSecRoaResource {
     @Path("/dc-gateway/batch-create-ipsecs")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Create IpSec.", notes = "Create IpSec.", response = void.class, tags = {})
+    @ApiResponses(value = {
+                    @ApiResponse(code = 201, message = "IpSec creation success.", response = ResultRsp.class),
+                    @ApiResponse(code = 400, message = "IpSec resource provided in body is missing with required properties.", response = void.class),
+                    @ApiResponse(code = 401, message = "Unauthorized.", response = void.class),
+                    @ApiResponse(code = 404, message = "Not found.", response = void.class),
+                    @ApiResponse(code = 500, message = "internal server error.", response = void.class)})
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "dcGwIpSecConnList", value = "List of IpSec to be created.", required = true,  paramType = "body", dataType = "org.openo.sdno.overlayvpn.model.netmodel.ipsec.DcGwIpSecConnection")})
+
     public ResultRsp<List<DcGwIpSecConnection>> createIpSec(@Context HttpServletRequest request,
             @HeaderParam("X-Driver-Parameter") String ctrlUuidParam, List<DcGwIpSecConnection> dcGwIpSecConnList)
             throws ServiceException {
@@ -104,6 +118,15 @@ public class OsDriverSvcIpSecRoaResource {
     @Path("/dc-gateway/create-ipsecs")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Create IpSec.", notes = "Create IpSec.", response = void.class, tags = {})
+    @ApiResponses(value = {
+                    @ApiResponse(code = 201, message = "IpSec creation success.", response = ResultRsp.class),
+                    @ApiResponse(code = 400, message = "IpSec resource provided in body is missing with required properties.", response = void.class),
+                    @ApiResponse(code = 401, message = "Unauthorized.", response = void.class),
+                    @ApiResponse(code = 404, message = "Not found.", response = void.class),
+                    @ApiResponse(code = 500, message = "internal server error.", response = void.class)})
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "dcGwIpSecConn", value = "IpSec to be created.", required = true,  paramType = "body", dataType = "org.openo.sdno.overlayvpn.model.netmodel.ipsec.DcGwIpSecConnection")})
     public ResultRsp<DcGwIpSecConnection> createIpSec(@Context HttpServletRequest request,
             @HeaderParam("X-Driver-Parameter") String ctrlUuidParam, DcGwIpSecConnection dcGwIpSecConn)
             throws ServiceException {
@@ -129,6 +152,10 @@ public class OsDriverSvcIpSecRoaResource {
     @Path("/dc-gateway/ipsecs/{ipsecconnectionid}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Delete IpSec.", notes = "Delete IpSec.", response = void.class, tags = {})
+    @ApiResponses(value = {
+                    @ApiResponse(code = 204, message = "IpSec deletion success.", response = ResultRsp.class),
+                    @ApiResponse(code = 500, message = "internal server error.", response = void.class)})
     public ResultRsp<String> deleteIpSec(@Context HttpServletRequest request,
             @HeaderParam("X-Driver-Parameter") String ctrlUuidParam, @PathParam("ipsecconnectionid") String ipSecConnId)
             throws ServiceException {
@@ -156,6 +183,10 @@ public class OsDriverSvcIpSecRoaResource {
     @Path("/dc-gateway/ipsecs/batch-delete")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Delete list of IpSec.", notes = "Delete IpSecs.", response = void.class, tags = {})
+    @ApiResponses(value = {
+                    @ApiResponse(code = 204, message = "IpSec deletion success.", response = ResultRsp.class),
+                    @ApiResponse(code = 500, message = "internal server error.", response = void.class)})
     public ResultRsp<String> deleteIpSec(@Context HttpServletRequest request,
             @HeaderParam("X-Driver-Parameter") String ctrlUuidParam, @PathParam("ipsecconnectionid") List<String> ipSecConnIds)
             throws ServiceException {

@@ -1,6 +1,6 @@
 {
     "request": {
-        "uri": "/openoapi/extsys/v1/vims/TEST",
+        "uri": "/openoapi/extsys/v1/vims/[a-z0-9\\-\\_]{1,36}",
         "method": "get",
         "headers": {
             "Content-Type": "application/json"

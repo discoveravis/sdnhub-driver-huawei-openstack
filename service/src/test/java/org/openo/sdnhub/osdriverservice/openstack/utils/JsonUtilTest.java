@@ -18,9 +18,15 @@ package org.openo.sdnhub.osdriverservice.openstack.utils;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.junit.Test;
+import org.openo.baseservice.remoteservice.exception.ServiceException;
+import org.openo.sdnhub.osdriverservice.nbi.model.SbiIp;
 import org.openo.sdnhub.osdriverservice.openstack.client.exception.OpenStackException;
 import org.openo.sdnhub.osdriverservice.openstack.utils.JsonUtil;
 
@@ -39,16 +45,18 @@ public class JsonUtilTest {
     public void toJsonTest() {
         Object obj = new Object();
 
-        new MockUp<JsonUtil>() {
+        new MockUp<ObjectMapper>() {
 
             @Mock
-            public String toJson(Object obj, boolean considerRootName) throws OpenStackException {
+            public String writeValueAsString(Object obj) throws OpenStackException {
                 return "Success";
             }
         };
         String str = JsonUtil.toJson(obj);
         assertTrue(str != null);
     }
+
+
 
     @Test
     public void toJsonTestTrueCase() {
@@ -68,7 +76,6 @@ public class JsonUtilTest {
         assertTrue(str == null);
     }
 
-    @Test(expected = Exception.class)
     public void toJsonTestFalseCase() {
         Object obj = new Object();
 
@@ -83,5 +90,39 @@ public class JsonUtilTest {
         boolean val;
         val = false;
         JsonUtil.toJson(obj, val);
+    }
+
+    @Test
+    public void toJsonTestTrueCase2() {
+        Object obj = new Object();
+
+        new MockUp<ObjectMapper>() {
+
+            @Mock
+            public String writeValueAsString(Object value) throws OpenStackException {
+                return null;
+            }
+        };
+
+        boolean val;
+        val = true;
+        String str = JsonUtil.toJson(obj, val, true);
+        assertTrue(str == null);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void toJsonTestTrueCase3() {
+        Object obj = new Object();
+
+        new MockUp<ObjectMapper>() {
+
+            @Mock
+            public <T> T readValue(String content, Class<T> valueType)
+                    throws IOException, JsonParseException, JsonMappingException {
+                throw new IOException();
+            }
+        };
+
+        JsonUtil.fromJson("", SbiIp.class);
     }
 }

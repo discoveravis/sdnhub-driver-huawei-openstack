@@ -26,10 +26,11 @@ import java.util.Map;
 import org.junit.Test;
 import org.openo.baseservice.remoteservice.exception.ServiceException;
 import org.openo.sdnhub.osdriverservice.dao.model.OverlayUnderlayMapping;
+import org.openo.sdnhub.osdriverservice.nbi.model.SbiIkePolicy;
+import org.openo.sdnhub.osdriverservice.nbi.model.SbiNeIpSec;
 import org.openo.sdnhub.osdriverservice.sbi.model.OsIpSec;
 import org.openo.sdnhub.osdriverservice.sbi.model.OsSubnet;
 import org.openo.sdnhub.osdriverservice.sbi.model.OsVpc;
-import org.openo.sdnhub.osdriverservice.util.MigrateModelUtil;
 import org.openo.sdno.overlayvpn.model.ipsec.IkePolicy;
 import org.openo.sdno.overlayvpn.model.ipsec.IpSecPolicy;
 import org.openo.sdno.overlayvpn.model.netmodel.ipsec.DcGwIpSecConnection;
@@ -166,21 +167,53 @@ public class MigrateModelUtilTest {
         OverlayUnderlayMapping obj3 = new OverlayUnderlayMapping();
         OverlayUnderlayMapping obj4 = new OverlayUnderlayMapping();
         OverlayUnderlayMapping obj5 = new OverlayUnderlayMapping();
+
+        OverlayUnderlayMapping obj6 = new OverlayUnderlayMapping();
+        OverlayUnderlayMapping obj7 = new OverlayUnderlayMapping();
+        OverlayUnderlayMapping obj8 = new OverlayUnderlayMapping();
+        OverlayUnderlayMapping obj9 = new OverlayUnderlayMapping();
+        OverlayUnderlayMapping obj10 = new OverlayUnderlayMapping();
+        OverlayUnderlayMapping obj11 = new OverlayUnderlayMapping();
+        OverlayUnderlayMapping obj12 = new OverlayUnderlayMapping();
+
         obj1.setUnderlayType("vpnIkePolicyId");
         obj2.setUnderlayType("vpnIpSecPolicyId");
         obj3.setUnderlayType("vpnServiceId");
         obj4.setUnderlayType("vpnIpSecSiteConnectionId");
         obj5.setUnderlayType("extra");
+        obj6.setUnderlayType("floatingIpId");
+        obj7.setUnderlayType("sourceAddress");
+        obj8.setUnderlayType("sourceLanCidrs");
+        obj9.setUnderlayType("projectId");
+        obj10.setUnderlayType("publicNetworkId");
+        obj11.setUnderlayType("routerId");
+        obj12.setUnderlayType("publicSubnetId");
+
         obj1.setAction("action");
         obj2.setAction("action");
         obj3.setAction("action");
         obj4.setAction("action");
         obj5.setAction("action");
+        obj6.setAction("action");
+        obj7.setAction("action");
+        obj8.setAction("action");
+        obj9.setAction("action");
+        obj10.setAction("action");
+        obj11.setAction("action");
+        obj12.setAction("action");
+
         list.add(obj1);
         list.add(obj2);
         list.add(obj3);
         list.add(obj4);
         list.add(obj5);
+        list.add(obj6);
+        list.add(obj7);
+        list.add(obj8);
+        list.add(obj9);
+        list.add(obj10);
+        list.add(obj11);
+        list.add(obj12);
 
         OsIpSec.Underlays underlays =  MigrateModelUtil.convert2(list);
         assertTrue(underlays != null);
@@ -188,10 +221,21 @@ public class MigrateModelUtilTest {
 
     @Test
     public void testConvertList() throws ServiceException{
-        Map<String, String> resources = new HashMap();
+        Map<String, String> resources = new HashMap<>();
         resources.put("key", "value");
-        Map<String, String> actions = new HashMap();
+        Map<String, String> actions = new HashMap<>();
         actions.put("key", "value");
         MigrateModelUtil.convert(resources, actions, "tenantID", "overlayType", "controllerId", "overlayId");
+    }
+
+    @Test
+    public void testConvertNullIpSec() {
+
+        SbiNeIpSec dcGwIpSecConnection = new SbiNeIpSec();
+        SbiIkePolicy sbiIkePolicy = new SbiIkePolicy();
+        dcGwIpSecConnection.setIkePolicy(sbiIkePolicy);
+        dcGwIpSecConnection.setPeerLanCidrs("123,1234");
+        org.openo.sdnhub.osdriverservice.sbi.model.OsIpSec osIpSec = MigrateModelUtil.convert(dcGwIpSecConnection);
+        assertTrue(osIpSec != null);
     }
 }

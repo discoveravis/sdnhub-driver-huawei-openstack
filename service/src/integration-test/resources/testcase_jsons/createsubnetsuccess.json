@@ -1,6 +1,6 @@
 {
     "request": {
-        "uri": "/openoapi/sbi-vpc/v1/subnets",
+        "uri": "/openstackdriverservice/openoapi/sbi-vpc/v1/subnets",
         "method": "post",
         "headers": {
             "Content-Type": "application/json",

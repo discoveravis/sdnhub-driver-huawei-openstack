@@ -1,0 +1,17 @@
+{
+  "request" : {
+    "uri" : "/openoapi/sdnomss/v1/buckets/osdriverdb/resources/osdriverunderlays/objects",
+    "method" : "delete",
+    "headers" : {
+    },
+    "json" : null
+  },
+  "response" : {
+    "status" : "204",
+    "headers": {
+            "Content-Type": "application/json",
+            "X-Subject-Token": "junk"
+    },
+    "json" : null
+  }
+}
