@@ -83,7 +83,7 @@ public class IpSecSbiService {
                 ip.setNetworkId(underlays.getPublicNetworkId());
                 ip.setProjectId(underlays.getProjectId());
 
-                client.createFloatingIp(ip);
+                ip = client.createFloatingIp(ip);
 
                 underlays.setFloatingIpId(ip.getId(), "c");
 
