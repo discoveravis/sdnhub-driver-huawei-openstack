@@ -16,11 +16,11 @@
 
 package org.openo.sdnhub.osdriverservice.rest.v2;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -30,13 +30,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.http.HttpStatus;
+import org.apache.commons.collections.CollectionUtils;
 import org.openo.baseservice.remoteservice.exception.ServiceException;
 import org.openo.sdnhub.osdriverservice.nbi.IpSecNbiService;
 import org.openo.sdnhub.osdriverservice.nbi.model.SbiNeIpSec;
 import org.openo.sdnhub.osdriverservice.sbi.model.OsIpSec;
 import org.openo.sdnhub.osdriverservice.util.MigrateModelUtil;
 import org.openo.sdno.overlayvpn.errorcode.ErrorCode;
+import org.openo.sdno.overlayvpn.result.FailData;
 import org.openo.sdno.overlayvpn.result.ResultRsp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,31 +88,48 @@ public class OsDriverSvcIpSecRoaResource {
                     @ApiResponse(code = 500, message = "internal server error.", response = void.class)})
     @ApiImplicitParams({
         @ApiImplicitParam(name = "dcGwIpSecConnList", value = "List of IpSec to be created.", required = true,  paramType = "body", dataType = "org.openo.sdnhub.osdriverservice.nbi.model.SbiNeIpSec")})
-    public ResultRsp<List<SbiNeIpSec>> createIpSec(@Context HttpServletRequest request,
+    public ResultRsp<SbiNeIpSec> createIpSec(@Context HttpServletRequest request,
             @HeaderParam("X-Driver-Parameter") String ctrlUuidParam, List<SbiNeIpSec> dcGwIpSecConnList)
             throws ServiceException {
         long enterTime = System.currentTimeMillis();
         String ctrlUuid = ctrlUuidParam.substring(ctrlUuidParam.indexOf('=') + 1);
 
+        ResultRsp<SbiNeIpSec> resultRsp = new ResultRsp<>(ErrorCode.OVERLAYVPN_SUCCESS);
+        resultRsp.setSuccessed(new ArrayList<SbiNeIpSec>());
+        resultRsp.setFail(new ArrayList<>());
+
         for(SbiNeIpSec dcGwIpSecConn : dcGwIpSecConnList) {
-            OsIpSec osIpSec = MigrateModelUtil.convert(dcGwIpSecConn);
 
-            osIpSec = this.service.createIpSec(ctrlUuid, osIpSec);
-            dcGwIpSecConn.getIkePolicy().setExternalId(osIpSec.getVpnIkePolicy().getId());
-            if (dcGwIpSecConn.getIpSecPolicy() != null) {
-                dcGwIpSecConn.getIpSecPolicy().setExternalId(osIpSec.getVpnIpSecPolicy().getId());
+            try {
+                OsIpSec osIpSec = MigrateModelUtil.convert(dcGwIpSecConn);
+
+                osIpSec = this.service.createIpSec(ctrlUuid, osIpSec);
+                dcGwIpSecConn.getIkePolicy().setExternalId(osIpSec.getVpnIkePolicy().getId());
+                if(dcGwIpSecConn.getIpSecPolicy() != null) {
+                    dcGwIpSecConn.getIpSecPolicy().setExternalId(osIpSec.getVpnIpSecPolicy().getId());
+                }
+                dcGwIpSecConn.getIkePolicy().setExternalId(osIpSec.getVpnIkePolicy().getId());
+                dcGwIpSecConn.setExternalId(osIpSec.getVpnService().getId());
+                dcGwIpSecConn.setExternalIpSecId(osIpSec.getVpnIpSecSiteConnection().getId());
+
+                dcGwIpSecConn.setSourceAddress(osIpSec.getAttributes().getSourceAddress());
+                dcGwIpSecConn.setSourceLanCidrs(osIpSec.getAttributes().getSourceLanCidrs());
+
+                resultRsp.getSuccessed().add(dcGwIpSecConn);
+            } catch(ServiceException e) {
+                LOGGER.error("Create IPsec failed ", e);
+                FailData<SbiNeIpSec> faildata = new FailData<>(null, e.getMessage(), dcGwIpSecConn);
+                resultRsp.getFail().add(faildata);
             }
-            dcGwIpSecConn.getIkePolicy().setExternalId(osIpSec.getVpnIkePolicy().getId());
-            dcGwIpSecConn.setExternalId(osIpSec.getVpnService().getId());
-            dcGwIpSecConn.setExternalIpSecId(osIpSec.getVpnIpSecSiteConnection().getId());
+        }
 
-            dcGwIpSecConn.setSourceAddress(osIpSec.getAttributes().getSourceAddress());
-            dcGwIpSecConn.setSourceLanCidrs(osIpSec.getAttributes().getSourceLanCidrs());
+        if(CollectionUtils.isNotEmpty(resultRsp.getFail())) {
+            resultRsp.setErrorCode(ErrorCode.OVERLAYVPN_FAILED);
         }
 
         LOGGER.info("Exit create method. cost time = " + (System.currentTimeMillis() - enterTime));
 
-        return new ResultRsp<>(ErrorCode.OVERLAYVPN_SUCCESS, dcGwIpSecConnList);
+        return resultRsp;
     }
 
 
@@ -129,15 +147,15 @@ public class OsDriverSvcIpSecRoaResource {
     @Path("/dc-gateway/ipsec-connections/{ipsecconnectionid}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Create IpSec.", notes = "Create IpSec.", response = void.class, tags = {})
+    @ApiOperation(value = "Update IpSec.", notes = "Update IpSec.", response = void.class, tags = {})
     @ApiResponses(value = {
-                    @ApiResponse(code = 201, message = "IpSec creation success.", response = ResultRsp.class),
+                    @ApiResponse(code = 201, message = "Update Ipsec success.", response = ResultRsp.class),
                     @ApiResponse(code = 400, message = "IpSec resource provided in body is missing with required properties.", response = void.class),
                     @ApiResponse(code = 401, message = "Unauthorized.", response = void.class),
                     @ApiResponse(code = 404, message = "Not found.", response = void.class),
                     @ApiResponse(code = 500, message = "internal server error.", response = void.class)})
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "dcGwIpSecConnList", value = "IpSec to be created.", required = true,  paramType = "body", dataType = "org.openo.sdnhub.osdriverservice.nbi.model.SbiNeIpSec")})
+        @ApiImplicitParam(name = "dcGwIpSecConn", value = "IpSec to be updated.", required = true,  paramType = "body", dataType = "org.openo.sdnhub.osdriverservice.nbi.model.SbiNeIpSec")})
     public ResultRsp<String> updateIpSec(@Context HttpServletRequest request,
             @HeaderParam("X-Driver-Parameter") String ctrlUuidParam, @PathParam("ipsecconnectionid") String ipSecConnId, SbiNeIpSec dcGwIpSecConn)
             throws ServiceException {
@@ -165,27 +183,42 @@ public class OsDriverSvcIpSecRoaResource {
     @Path("/dc-gateway/ipsec-connections/batch-delete")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Create IpSec.", notes = "Create IpSec.", response = void.class, tags = {})
+    @ApiOperation(value = "Delete IpSec.", notes = "Delete IpSec.", response = void.class, tags = {})
     @ApiResponses(value = {
-                    @ApiResponse(code = 201, message = "IpSec creation success.", response = ResultRsp.class),
+                    @ApiResponse(code = 201, message = "IpSec delete success.", response = ResultRsp.class),
                     @ApiResponse(code = 400, message = "IpSec resource provided in body is missing with required properties.", response = void.class),
                     @ApiResponse(code = 401, message = "Unauthorized.", response = void.class),
                     @ApiResponse(code = 404, message = "Not found.", response = void.class),
                     @ApiResponse(code = 500, message = "internal server error.", response = void.class)})
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "dcGwIpSecConnList", value = "List of IpSecs to be created.", required = true,  paramType = "body", dataType = "org.openo.sdnhub.osdriverservice.nbi.model.SbiNeIpSec")})
-    public ResultRsp<String> deleteIpSec(@Context HttpServletRequest request,
+        @ApiImplicitParam(name = "dcGwIpSecConnList", value = "List of IpSecs to be deleted.", required = true,  paramType = "body", dataType = "org.openo.sdnhub.osdriverservice.nbi.model.SbiNeIpSec")})
+    public ResultRsp<SbiNeIpSec> deleteIpSec(@Context HttpServletRequest request,
             @HeaderParam("X-Driver-Parameter") String ctrlUuidParam, List<SbiNeIpSec> dcGwIpSecConnList)
             throws ServiceException {
         long enterTime = System.currentTimeMillis();
         String ctrlUuid = ctrlUuidParam.substring(ctrlUuidParam.indexOf('=') + 1);
 
+        ResultRsp<SbiNeIpSec> resultRsp = new ResultRsp<>(ErrorCode.OVERLAYVPN_SUCCESS);
+        resultRsp.setSuccessed(new ArrayList<SbiNeIpSec>());
+        resultRsp.setFail(new ArrayList<>());
+
         for(SbiNeIpSec dcGwIpSecConn : dcGwIpSecConnList) {
-            this.service.deleteIpSec(ctrlUuid, dcGwIpSecConn.getUuid());
+            try {
+                this.service.deleteIpSec(ctrlUuid, dcGwIpSecConn.getUuid());
+                resultRsp.getSuccessed().add(dcGwIpSecConn);
+            } catch(ServiceException e) {
+                LOGGER.error("Create IPsec failed ", e);
+                FailData<SbiNeIpSec> faildata = new FailData<>(null, e.getMessage(), dcGwIpSecConn);
+                resultRsp.getFail().add(faildata);
+            }
+        }
+
+        if(CollectionUtils.isNotEmpty(resultRsp.getFail())) {
+            resultRsp.setErrorCode(ErrorCode.OVERLAYVPN_FAILED);
         }
 
         LOGGER.info("Exit delete method. cost time = " + (System.currentTimeMillis() - enterTime));
 
-        return new ResultRsp<>();
+        return resultRsp;
     }
 }

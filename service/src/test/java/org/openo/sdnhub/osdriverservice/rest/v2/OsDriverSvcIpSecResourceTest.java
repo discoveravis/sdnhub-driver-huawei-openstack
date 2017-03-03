@@ -57,6 +57,7 @@ import org.openo.sdno.overlayvpn.brs.invdao.ControllerDao;
 import org.openo.sdno.overlayvpn.brs.model.AuthInfo;
 import org.openo.sdno.overlayvpn.brs.model.CommParamMO;
 import org.openo.sdno.overlayvpn.brs.model.ControllerMO;
+import org.openo.sdno.overlayvpn.errorcode.ErrorCode;
 import org.openo.sdno.overlayvpn.model.ipsec.IkePolicy;
 import org.openo.sdno.overlayvpn.model.ipsec.IpSecPolicy;
 import org.openo.sdno.overlayvpn.model.netmodel.ipsec.DcGwIpSecConnection;
@@ -207,7 +208,7 @@ public class OsDriverSvcIpSecResourceTest {
         List<SbiNeIpSec> ipSecConnList = new ArrayList<SbiNeIpSec>();
         ipSecConnList.add(dcGwIpSecConnection);
         System.out.println(JsonUtil.toJson(ipSecConnList));
-        ResultRsp<List<SbiNeIpSec>> result = roaSource.createIpSec(request, "ctrlUUIT", ipSecConnList);
+        ResultRsp<SbiNeIpSec> result = roaSource.createIpSec(request, "ctrlUUIT", ipSecConnList);
         assertTrue(result.getHttpCode() == 200);
     }
 
@@ -475,16 +476,16 @@ public class OsDriverSvcIpSecResourceTest {
         dcGwIpSecConnection.setPeerLanCidrs("123,123,342,34343");
         dcGwIpSecConnection.setPeerAddress("peerAddress");
 
-        ResultRsp<List<SbiNeIpSec>> result = roaSource.createIpSec(request, "ctrlUUIT", dcGwIpSecConnectionList);
+        ResultRsp<SbiNeIpSec> result = roaSource.createIpSec(request, "ctrlUUIT", dcGwIpSecConnectionList);
         assertTrue(result.getHttpCode() == 200);
 
         List<SbiNeIpSec> ipSecConnList = new ArrayList<>();
         ipSecConnList.add(dcGwIpSecConnection);
-        ResultRsp<List<SbiNeIpSec>> resultList = roaSource.createIpSec(request, "ctrlUUIT", ipSecConnList);
+        ResultRsp<SbiNeIpSec> resultList = roaSource.createIpSec(request, "ctrlUUIT", ipSecConnList);
         assertTrue(resultList.getHttpCode() == 200);
     }
 
-    @Test(expected = ServiceException.class)
+    @Test
     public void testCreateIpSecException() throws ServiceException {
         new MockUp<ValidationUtil>() {
 
@@ -579,7 +580,9 @@ public class OsDriverSvcIpSecResourceTest {
         dcGwIpSecConnection.setPeerAddress("peerAddress");
         List<SbiNeIpSec> ipSecConnList = new ArrayList<SbiNeIpSec>();
         ipSecConnList.add(dcGwIpSecConnection);
-        roaSource.createIpSec(request, "ctrlUUIT", ipSecConnList);
+        ResultRsp<SbiNeIpSec> rsp = roaSource.createIpSec(request, "ctrlUUIT", ipSecConnList);
+
+        assertTrue(rsp.getErrorCode()==ErrorCode.OVERLAYVPN_FAILED);
 
     }
 
@@ -705,15 +708,14 @@ public class OsDriverSvcIpSecResourceTest {
 
         HttpServletRequest request = new MockHttpServletRequest();
         HttpServletResponse response = new MockHttpServletResponse();
-        ResultRsp<String> result = roaSource.deleteIpSec(request, "ctrlUuidParam", ipSecConnList);
+        ResultRsp<SbiNeIpSec> result = roaSource.deleteIpSec(request, "ctrlUuidParam", ipSecConnList);
         assertTrue(result.getHttpCode() == 200);
 
-        ResultRsp<String> result1 = roaSource.deleteIpSec(request, "ctrlUuidParam", ipSecConnList);
+        ResultRsp<SbiNeIpSec> result1 = roaSource.deleteIpSec(request, "ctrlUuidParam", ipSecConnList);
         assertTrue(result1.getHttpCode() == 200);
     }
 
     @Test
-
     public void testDeleteIpSecBranch() throws ServiceException {
         new MockUp<DaoUtil<T>>() {
 
@@ -830,7 +832,7 @@ public class OsDriverSvcIpSecResourceTest {
 
         HttpServletRequest request = new MockHttpServletRequest();
         HttpServletResponse response = new MockHttpServletResponse();
-        ResultRsp<String> result = roaSource.deleteIpSec(request, "ctrlUuidParam", ipSecConnList);
+        ResultRsp<SbiNeIpSec> result = roaSource.deleteIpSec(request, "ctrlUuidParam", ipSecConnList);
         assertTrue(result.getHttpCode() == 200);
     }
 
