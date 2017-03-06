@@ -68,11 +68,15 @@ public class OsDriverSvcIpSecRoaResource {
     /**
      * Create IpSec connection batch.<br>
      *
-     * @param request HttpServletRequest Object
-     * @param ctrlUuidParam Controller Id Parameter
-     * @param dcGwIpSecConnList List of IpSec connections
+     * @param request
+     *            HttpServletRequest Object
+     * @param ctrlUuidParam
+     *            Controller Id Parameter
+     * @param dcGwIpSecConnList
+     *            List of IpSec connections
      * @return ResultRsp object with IpSec connection list data
-     * @throws ServiceException when create IpSec connection failed
+     * @throws ServiceException
+     *             when create IpSec connection failed
      * @since SDNHUB 0.5
      */
     @POST
@@ -80,14 +84,13 @@ public class OsDriverSvcIpSecRoaResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Create IpSec.", notes = "Create IpSec.", response = void.class, tags = {})
-    @ApiResponses(value = {
-                    @ApiResponse(code = 201, message = "IpSec creation success.", response = ResultRsp.class),
-                    @ApiResponse(code = 400, message = "IpSec resource provided in body is missing with required properties.", response = void.class),
-                    @ApiResponse(code = 401, message = "Unauthorized.", response = void.class),
-                    @ApiResponse(code = 404, message = "Not found.", response = void.class),
-                    @ApiResponse(code = 500, message = "internal server error.", response = void.class)})
+    @ApiResponses(value = { @ApiResponse(code = 201, message = "IpSec creation success.", response = ResultRsp.class),
+            @ApiResponse(code = 400, message = "IpSec resource provided in body is missing with required properties.", response = void.class),
+            @ApiResponse(code = 401, message = "Unauthorized.", response = void.class),
+            @ApiResponse(code = 404, message = "Not found.", response = void.class),
+            @ApiResponse(code = 500, message = "internal server error.", response = void.class) })
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "dcGwIpSecConnList", value = "List of IpSec to be created.", required = true,  paramType = "body", dataType = "org.openo.sdnhub.osdriverservice.nbi.model.SbiNeIpSec")})
+            @ApiImplicitParam(name = "dcGwIpSecConnList", value = "List of IpSec to be created.", required = true, paramType = "body", dataType = "org.openo.sdnhub.osdriverservice.nbi.model.SbiNeIpSec") })
     public ResultRsp<SbiNeIpSec> createIpSec(@Context HttpServletRequest request,
             @HeaderParam("X-Driver-Parameter") String ctrlUuidParam, List<SbiNeIpSec> dcGwIpSecConnList)
             throws ServiceException {
@@ -98,14 +101,14 @@ public class OsDriverSvcIpSecRoaResource {
         resultRsp.setSuccessed(new ArrayList<SbiNeIpSec>());
         resultRsp.setFail(new ArrayList<>());
 
-        for(SbiNeIpSec dcGwIpSecConn : dcGwIpSecConnList) {
+        for (SbiNeIpSec dcGwIpSecConn : dcGwIpSecConnList) {
 
             try {
                 OsIpSec osIpSec = MigrateModelUtil.convert(dcGwIpSecConn);
 
                 osIpSec = this.service.createIpSec(ctrlUuid, osIpSec);
                 dcGwIpSecConn.getIkePolicy().setExternalId(osIpSec.getVpnIkePolicy().getId());
-                if(dcGwIpSecConn.getIpSecPolicy() != null) {
+                if (dcGwIpSecConn.getIpSecPolicy() != null) {
                     dcGwIpSecConn.getIpSecPolicy().setExternalId(osIpSec.getVpnIpSecPolicy().getId());
                 }
                 dcGwIpSecConn.getIkePolicy().setExternalId(osIpSec.getVpnIkePolicy().getId());
@@ -116,14 +119,14 @@ public class OsDriverSvcIpSecRoaResource {
                 dcGwIpSecConn.setSourceLanCidrs(osIpSec.getAttributes().getSourceLanCidrs());
 
                 resultRsp.getSuccessed().add(dcGwIpSecConn);
-            } catch(ServiceException e) {
+            } catch (ServiceException e) {
                 LOGGER.error("Create IPsec failed ", e);
                 FailData<SbiNeIpSec> faildata = new FailData<>(null, e.getMessage(), dcGwIpSecConn);
                 resultRsp.getFail().add(faildata);
             }
         }
 
-        if(CollectionUtils.isNotEmpty(resultRsp.getFail())) {
+        if (CollectionUtils.isNotEmpty(resultRsp.getFail())) {
             resultRsp.setErrorCode(ErrorCode.OVERLAYVPN_FAILED);
         }
 
@@ -132,15 +135,18 @@ public class OsDriverSvcIpSecRoaResource {
         return resultRsp;
     }
 
-
     /**
      * Update IpSec connection.<br>
      *
-     * @param request HttpServletRequest Object
-     * @param ctrlUuidParam Controller Id Parameter
-     * @param dcGwIpSecConnList List of IpSec connections
+     * @param request
+     *            HttpServletRequest Object
+     * @param ctrlUuidParam
+     *            Controller Id Parameter
+     * @param dcGwIpSecConnList
+     *            List of IpSec connections
      * @return ResultRsp object with IpSec connection list data
-     * @throws ServiceException when create IpSec connection failed
+     * @throws ServiceException
+     *             when create IpSec connection failed
      * @since SDNHUB 0.5
      */
     @PUT
@@ -148,35 +154,49 @@ public class OsDriverSvcIpSecRoaResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Update IpSec.", notes = "Update IpSec.", response = void.class, tags = {})
-    @ApiResponses(value = {
-                    @ApiResponse(code = 201, message = "Update Ipsec success.", response = ResultRsp.class),
-                    @ApiResponse(code = 400, message = "IpSec resource provided in body is missing with required properties.", response = void.class),
-                    @ApiResponse(code = 401, message = "Unauthorized.", response = void.class),
-                    @ApiResponse(code = 404, message = "Not found.", response = void.class),
-                    @ApiResponse(code = 500, message = "internal server error.", response = void.class)})
+    @ApiResponses(value = { @ApiResponse(code = 201, message = "Update Ipsec success.", response = ResultRsp.class),
+            @ApiResponse(code = 400, message = "IpSec resource provided in body is missing with required properties.", response = void.class),
+            @ApiResponse(code = 401, message = "Unauthorized.", response = void.class),
+            @ApiResponse(code = 404, message = "Not found.", response = void.class),
+            @ApiResponse(code = 500, message = "internal server error.", response = void.class) })
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "dcGwIpSecConn", value = "IpSec to be updated.", required = true,  paramType = "body", dataType = "org.openo.sdnhub.osdriverservice.nbi.model.SbiNeIpSec")})
-    public ResultRsp<String> updateIpSec(@Context HttpServletRequest request,
-            @HeaderParam("X-Driver-Parameter") String ctrlUuidParam, @PathParam("ipsecconnectionid") String ipSecConnId, SbiNeIpSec dcGwIpSecConn)
-            throws ServiceException {
+            @ApiImplicitParam(name = "dcGwIpSecConn", value = "IpSec to be updated.", required = true, paramType = "body", dataType = "org.openo.sdnhub.osdriverservice.nbi.model.SbiNeIpSec") })
+    public ResultRsp<SbiNeIpSec> updateIpSec(@Context HttpServletRequest request,
+            @HeaderParam("X-Driver-Parameter") String ctrlUuidParam, @PathParam("ipsecconnectionid") String ipSecConnId,
+            SbiNeIpSec dcGwIpSecConn) throws ServiceException {
         String ctrlUuid = ctrlUuidParam.substring(ctrlUuidParam.indexOf('=') + 1);
+        ResultRsp<SbiNeIpSec> resultRsp = new ResultRsp<>(ErrorCode.OVERLAYVPN_SUCCESS);
         OsIpSec osIpSec = MigrateModelUtil.convert(dcGwIpSecConn);
         if (osIpSec.getVpnIpSecSiteConnection().getPeerCidrs() != null) {
-            this.service.updateIpSec(ctrlUuid, ipSecConnId, osIpSec);
+            try {
+                this.service.updateIpSec(ctrlUuid, ipSecConnId, osIpSec);
+                resultRsp.getSuccessed().add(dcGwIpSecConn);
+            } catch (ServiceException e) {
+                LOGGER.error("Update IPsec failed ", e);
+                FailData<SbiNeIpSec> faildata = new FailData<>(null, e.getMessage(), dcGwIpSecConn);
+                resultRsp.getFail().add(faildata);
+            }
         }
 
-        return new ResultRsp<>(ErrorCode.OVERLAYVPN_SUCCESS);
-    }
+        if (CollectionUtils.isNotEmpty(resultRsp.getFail())) {
+            resultRsp.setErrorCode(ErrorCode.OVERLAYVPN_FAILED);
+        }
 
+        return resultRsp;
+    }
 
     /**
      * Delete IpSec connection.<br>
      *
-     * @param request HttpServletRequest Object
-     * @param ctrlUuidParam Controller Id Parameter
-     * @param ipSecConnIds IpSec connection ids
+     * @param request
+     *            HttpServletRequest Object
+     * @param ctrlUuidParam
+     *            Controller Id Parameter
+     * @param ipSecConnIds
+     *            IpSec connection ids
      * @return ResultRsp object with deleting result data
-     * @throws ServiceException when delete IpSec connection failed
+     * @throws ServiceException
+     *             when delete IpSec connection failed
      * @since SDNHUB 0.5
      */
     @POST
@@ -184,14 +204,13 @@ public class OsDriverSvcIpSecRoaResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Delete IpSec.", notes = "Delete IpSec.", response = void.class, tags = {})
-    @ApiResponses(value = {
-                    @ApiResponse(code = 201, message = "IpSec delete success.", response = ResultRsp.class),
-                    @ApiResponse(code = 400, message = "IpSec resource provided in body is missing with required properties.", response = void.class),
-                    @ApiResponse(code = 401, message = "Unauthorized.", response = void.class),
-                    @ApiResponse(code = 404, message = "Not found.", response = void.class),
-                    @ApiResponse(code = 500, message = "internal server error.", response = void.class)})
+    @ApiResponses(value = { @ApiResponse(code = 201, message = "IpSec delete success.", response = ResultRsp.class),
+            @ApiResponse(code = 400, message = "IpSec resource provided in body is missing with required properties.", response = void.class),
+            @ApiResponse(code = 401, message = "Unauthorized.", response = void.class),
+            @ApiResponse(code = 404, message = "Not found.", response = void.class),
+            @ApiResponse(code = 500, message = "internal server error.", response = void.class) })
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "dcGwIpSecConnList", value = "List of IpSecs to be deleted.", required = true,  paramType = "body", dataType = "org.openo.sdnhub.osdriverservice.nbi.model.SbiNeIpSec")})
+            @ApiImplicitParam(name = "dcGwIpSecConnList", value = "List of IpSecs to be deleted.", required = true, paramType = "body", dataType = "org.openo.sdnhub.osdriverservice.nbi.model.SbiNeIpSec") })
     public ResultRsp<SbiNeIpSec> deleteIpSec(@Context HttpServletRequest request,
             @HeaderParam("X-Driver-Parameter") String ctrlUuidParam, List<SbiNeIpSec> dcGwIpSecConnList)
             throws ServiceException {
@@ -202,18 +221,18 @@ public class OsDriverSvcIpSecRoaResource {
         resultRsp.setSuccessed(new ArrayList<SbiNeIpSec>());
         resultRsp.setFail(new ArrayList<>());
 
-        for(SbiNeIpSec dcGwIpSecConn : dcGwIpSecConnList) {
+        for (SbiNeIpSec dcGwIpSecConn : dcGwIpSecConnList) {
             try {
                 this.service.deleteIpSec(ctrlUuid, dcGwIpSecConn.getUuid());
                 resultRsp.getSuccessed().add(dcGwIpSecConn);
-            } catch(ServiceException e) {
+            } catch (ServiceException e) {
                 LOGGER.error("Create IPsec failed ", e);
                 FailData<SbiNeIpSec> faildata = new FailData<>(null, e.getMessage(), dcGwIpSecConn);
                 resultRsp.getFail().add(faildata);
             }
         }
 
-        if(CollectionUtils.isNotEmpty(resultRsp.getFail())) {
+        if (CollectionUtils.isNotEmpty(resultRsp.getFail())) {
             resultRsp.setErrorCode(ErrorCode.OVERLAYVPN_FAILED);
         }
 

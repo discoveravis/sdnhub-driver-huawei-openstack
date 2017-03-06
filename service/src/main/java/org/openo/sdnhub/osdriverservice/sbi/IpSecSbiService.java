@@ -29,7 +29,7 @@ import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnIkePolicy;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnIpSecPolicy;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnIpSecSiteConnection;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnService;
-import org.openo.sdnhub.osdriverservice.openstack.utils.JsonUtil;
+import org.openo.sdno.framework.container.util.JsonUtil;
 import org.openo.sdnhub.osdriverservice.sbi.model.OsIpSec;
 
 

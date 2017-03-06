@@ -341,7 +341,7 @@ public class OsDriverSvcIpSecResourceTest {
         List<SbiNeIpSec> ipSecConnList = new ArrayList<SbiNeIpSec>();
         ipSecConnList.add(dcGwIpSecConnection);
         System.out.println(JsonUtil.toJson(ipSecConnList));
-        ResultRsp<String> r1 = roaSource.updateIpSec(request, "ctrlUUIT", "123", dcGwIpSecConnection);
+        ResultRsp<SbiNeIpSec> r1 = roaSource.updateIpSec(request, "ctrlUUIT", "123", dcGwIpSecConnection);
         assertTrue(r1.getHttpCode() == 200);
     }
 
