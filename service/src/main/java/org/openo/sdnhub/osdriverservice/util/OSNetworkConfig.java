@@ -76,6 +76,13 @@ public class OSNetworkConfig {
         return properties.getProperty("segmentid");
     }
 
+    /**
+     * Get region Id
+     */
+    public String getRegionId() {
+        return properties.getProperty("regionId");
+    }
+
     private void loadProperties() {
         try {
             FileInputStream fin = new FileInputStream(OS_NETWORK_CONFIG_FILE);
