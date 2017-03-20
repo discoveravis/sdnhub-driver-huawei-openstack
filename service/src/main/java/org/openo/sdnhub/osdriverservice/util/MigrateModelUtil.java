@@ -265,7 +265,7 @@ public class MigrateModelUtil {
         ipsec.setEncapsulationMode(ipSecPolicy.getEncapsulationMode());
         ipsec.setEncryptionAlgorithm(ipSecPolicy.getEncryptionAlgorithm());
 
-        ipsec.setPfs(ipSecPolicy.getPfs());
+        ipsec.setPfs(ipSecPolicy.getPfs().toLowerCase());
         ipsec.setTenantId(dcGwIpSecConnection.getTenantId());
 
 

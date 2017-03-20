@@ -75,6 +75,7 @@ public class IpSecSbiService {
                 ipsec.getVpnIpSecPolicy().setTenantId(underlays.getProjectId());
             }
             ipsec.getVpnService().setTenantId(underlays.getProjectId());
+            ipsec.getVpnService().setRouterId(underlays.getRouterId());
             ipsec.getVpnIpSecSiteConnection().setTenantId(underlays.getProjectId());
 
             if (underlays.getFloatingIpId() == null) {
