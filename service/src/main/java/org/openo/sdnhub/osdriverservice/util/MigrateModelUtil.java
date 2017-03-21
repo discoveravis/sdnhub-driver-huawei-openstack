@@ -37,11 +37,15 @@ import org.openo.sdnhub.osdriverservice.openstack.client.model.enums.DpdAction;
 import org.openo.sdnhub.osdriverservice.sbi.model.OsIpSec;
 import org.openo.sdnhub.osdriverservice.sbi.model.OsSubnet;
 import org.openo.sdnhub.osdriverservice.sbi.model.OsVpc;
+import org.openo.sdno.framework.container.util.JsonUtil;
 import org.openo.sdno.overlayvpn.model.ipsec.IkePolicy;
 import org.openo.sdno.overlayvpn.model.ipsec.IpSecPolicy;
 import org.openo.sdno.overlayvpn.model.netmodel.ipsec.DcGwIpSecConnection;
 import org.openo.sdno.overlayvpn.model.netmodel.vpc.Subnet;
 import org.openo.sdno.overlayvpn.model.netmodel.vpc.Vpc;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 
 /**
@@ -304,10 +308,14 @@ public class MigrateModelUtil {
      * @since SDNHUB 0.5
      */
     private static VpnIpSecSiteConnection convertConn(SbiNeIpSec dcGwIpSecConnection) {
-        String[] peerCidrArr = dcGwIpSecConnection.getPeerLanCidrs().split(",");
+
         List<String> peerCidrList = new ArrayList<>();
-        for(String peerCidr : peerCidrArr) {
-            peerCidrList.add(peerCidr);
+        if(!dcGwIpSecConnection.getPeerLanCidrs().isEmpty()){
+            JSONArray results = JSONArray.fromObject(dcGwIpSecConnection.getPeerLanCidrs());
+            for(int i=0; i<results.size(); i++){
+                JSONObject jsonObj  = results.getJSONObject(i);
+                peerCidrList.add(jsonObj.get("ipv4") + "/" + jsonObj.get("ipMask"));
+            }
         }
 
         VpnIpSecSiteConnection conn = new VpnIpSecSiteConnection();

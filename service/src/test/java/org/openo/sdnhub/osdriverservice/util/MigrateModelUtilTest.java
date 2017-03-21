@@ -234,7 +234,7 @@ public class MigrateModelUtilTest {
         SbiNeIpSec dcGwIpSecConnection = new SbiNeIpSec();
         SbiIkePolicy sbiIkePolicy = new SbiIkePolicy();
         dcGwIpSecConnection.setIkePolicy(sbiIkePolicy);
-        dcGwIpSecConnection.setPeerLanCidrs("123,1234");
+        dcGwIpSecConnection.setPeerLanCidrs("[{\"ipv4\":\"10.21.3.0\",\"ipMask\":\"24\"}]");
         org.openo.sdnhub.osdriverservice.sbi.model.OsIpSec osIpSec = MigrateModelUtil.convert(dcGwIpSecConnection);
         assertTrue(osIpSec != null);
     }

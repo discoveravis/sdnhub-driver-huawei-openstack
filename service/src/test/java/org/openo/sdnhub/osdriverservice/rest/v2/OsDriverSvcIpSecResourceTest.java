@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,9 +57,6 @@ import org.openo.sdno.overlayvpn.brs.model.AuthInfo;
 import org.openo.sdno.overlayvpn.brs.model.CommParamMO;
 import org.openo.sdno.overlayvpn.brs.model.ControllerMO;
 import org.openo.sdno.overlayvpn.errorcode.ErrorCode;
-import org.openo.sdno.overlayvpn.model.ipsec.IkePolicy;
-import org.openo.sdno.overlayvpn.model.ipsec.IpSecPolicy;
-import org.openo.sdno.overlayvpn.model.netmodel.ipsec.DcGwIpSecConnection;
 import org.openo.sdno.overlayvpn.result.ResultRsp;
 import org.openo.sdno.overlayvpn.util.check.ValidationUtil;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -203,7 +199,7 @@ public class OsDriverSvcIpSecResourceTest {
 
         dcGwIpSecConnection.setTenantId("tenantId");
         dcGwIpSecConnection.setActiveStatus("None");
-        dcGwIpSecConnection.setPeerLanCidrs("123,123,342,34343");
+        dcGwIpSecConnection.setPeerLanCidrs("[{\"ipv4\":\"10.21.3.0\",\"ipMask\":\"24\"}]");
         dcGwIpSecConnection.setPeerAddress("peerAddress");
         List<SbiNeIpSec> ipSecConnList = new ArrayList<SbiNeIpSec>();
         ipSecConnList.add(dcGwIpSecConnection);
@@ -336,7 +332,7 @@ public class OsDriverSvcIpSecResourceTest {
 
         dcGwIpSecConnection.setTenantId("tenantId");
         dcGwIpSecConnection.setActiveStatus("None");
-        dcGwIpSecConnection.setPeerLanCidrs("123,123,342,34343");
+        dcGwIpSecConnection.setPeerLanCidrs("[{\"ipv4\":\"10.21.3.0\",\"ipMask\":\"24\"}]");
         dcGwIpSecConnection.setPeerAddress("peerAddress");
         List<SbiNeIpSec> ipSecConnList = new ArrayList<SbiNeIpSec>();
         ipSecConnList.add(dcGwIpSecConnection);
@@ -473,7 +469,7 @@ public class OsDriverSvcIpSecResourceTest {
 
         dcGwIpSecConnection.setTenantId("tenantId");
         dcGwIpSecConnection.setActiveStatus("adminStatus");
-        dcGwIpSecConnection.setPeerLanCidrs("123,123,342,34343");
+        dcGwIpSecConnection.setPeerLanCidrs("[{\"ipv4\":\"10.21.3.0\",\"ipMask\":\"24\"}]");
         dcGwIpSecConnection.setPeerAddress("peerAddress");
 
         ResultRsp<SbiNeIpSec> result = roaSource.createIpSec(request, "ctrlUUIT", dcGwIpSecConnectionList);
@@ -576,7 +572,7 @@ public class OsDriverSvcIpSecResourceTest {
 
         dcGwIpSecConnection.setTenantId("tenantId");
         dcGwIpSecConnection.setActiveStatus("adminStatus");
-        dcGwIpSecConnection.setPeerLanCidrs("123,123,342,34343");
+        dcGwIpSecConnection.setPeerLanCidrs("[{\"ipv4\":\"10.21.3.0\",\"ipMask\":\"24\"}]");
         dcGwIpSecConnection.setPeerAddress("peerAddress");
         List<SbiNeIpSec> ipSecConnList = new ArrayList<SbiNeIpSec>();
         ipSecConnList.add(dcGwIpSecConnection);
