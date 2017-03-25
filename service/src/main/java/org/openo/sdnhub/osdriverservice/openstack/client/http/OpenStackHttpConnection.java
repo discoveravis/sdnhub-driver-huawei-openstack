@@ -231,7 +231,7 @@ public class OpenStackHttpConnection {
         String tokenJson = V3_TOKEN_BODY_DOMAIN_SCOPE;
 
         OSDriverConfig config = new OSDriverConfig();
-        if (config.getOsVersion() != KILO) {
+        if(!config.getOsVersion().equalsIgnoreCase(KILO)) {
             tokenJson = V3_TOEKN_BODY_KILO_PLUS;
         }
 

@@ -23,14 +23,13 @@ import org.openo.baseservice.remoteservice.exception.ServiceException;
 import org.openo.sdnhub.osdriverservice.nbi.model.SbiIp;
 import org.openo.sdnhub.osdriverservice.openstack.client.OpenStackClient;
 import org.openo.sdnhub.osdriverservice.openstack.client.exception.OpenStackException;
-import org.openo.sdnhub.osdriverservice.openstack.client.model.FloatingIp;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.Subnet;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnIkePolicy;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnIpSecPolicy;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnIpSecSiteConnection;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnService;
-import org.openo.sdno.framework.container.util.JsonUtil;
 import org.openo.sdnhub.osdriverservice.sbi.model.OsIpSec;
+import org.openo.sdno.framework.container.util.JsonUtil;
 
 
 /**
@@ -70,30 +69,18 @@ public class IpSecSbiService {
 
         if (ipsec.getVpcId() != null) {
             //set all tenant id
-            ipsec.getVpnIkePolicy().setTenantId(underlays.getProjectId());
             if (ipsec.getVpnIpSecPolicy() != null) {
                 ipsec.getVpnIpSecPolicy().setTenantId(underlays.getProjectId());
+            }
+            if (ipsec.getVpnIkePolicy() != null) {
+                ipsec.getVpnIkePolicy().setTenantId(underlays.getProjectId());
             }
             ipsec.getVpnService().setTenantId(underlays.getProjectId());
             ipsec.getVpnService().setRouterId(underlays.getRouterId());
             ipsec.getVpnIpSecSiteConnection().setTenantId(underlays.getProjectId());
 
-            if (underlays.getFloatingIpId() == null) {
-                //Create the floating ip
-                FloatingIp ip = new FloatingIp();
-                ip.setNetworkId(underlays.getPublicNetworkId());
-                ip.setProjectId(underlays.getProjectId());
-
-                ip = client.createFloatingIp(ip);
-
-                underlays.setFloatingIpId(ip.getId(), "c");
-
-                SbiIp sourceIp = new SbiIp();
-                sourceIp.setIpv4(ip.getIpAddress());
-                sourceIp.setIpMask("32");
-                underlays.setSourceAddress(JsonUtil.toJson(sourceIp), "u");
-
-                List<Subnet> subnets = client.listSubnetForNetowrkId(ip.getNetworkId());
+            if (ipsec.getVpnService().getSubnetId() == null) {
+                List<Subnet> subnets = client.listSubnetForNetowrkId(underlays.getPublicNetworkId());
 
                 //update the vpn subnet id
                 ipsec.getVpnService().setSubnetId(subnets.get(0).getId());
@@ -188,11 +175,6 @@ public class IpSecSbiService {
 
             this.client.deleteVpnIpSecPolicy(underlays.getVpnIpSecPolicyId());
             underlays.setVpnIpSecPolicyId(underlays.getVpnIpSecPolicyId(), "d");
-
-            if (underlays.getFloatingIpId() != null) {
-                this.client.deleteFloatingIp(underlays.getFloatingIpId());
-                underlays.setFloatingIpId(underlays.getFloatingIpId(), "d");
-            }
         } catch(OpenStackException e) {
             if(e.getHttpCode() != 404) {
                 throw e;

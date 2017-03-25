@@ -33,7 +33,6 @@ import org.junit.Test;
 import org.openo.baseservice.remoteservice.exception.ServiceException;
 import org.openo.sdnhub.osdriverservice.openstack.client.OpenStackClient;
 import org.openo.sdnhub.osdriverservice.openstack.client.OpenStackCredentials;
-import org.openo.sdnhub.osdriverservice.openstack.client.OpenStackServiceContext;
 import org.openo.sdnhub.osdriverservice.openstack.client.exception.OpenStackException;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnIkePolicy;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnIpSecSiteConnection;
@@ -281,7 +280,6 @@ public class IpSecSbiServiceTest {
          attributes.setVpnIpSecPolicyId("vpnIpSecPolicyId", "d");
          attributes.setVpnIpSecSiteConnectionId("vpnIpSecSiteConnectionId", "action");
          attributes.setVpnServiceId("vpnServiceId", "action");
-         attributes.setFloatingIpId("1234floatingIpId", "action");
          ipsec.setAttributes(attributes);
 
          ipSecService.deleteIpSec(attributes);
@@ -320,7 +318,6 @@ public class IpSecSbiServiceTest {
          attributes.setVpnIpSecPolicyId("vpnIpSecPolicyId", "d");
          attributes.setVpnIpSecSiteConnectionId("vpnIpSecSiteConnectionId", "action");
          attributes.setVpnServiceId("vpnServiceId", "action");
-         attributes.setFloatingIpId(null,null);
          ipsec.setAttributes(attributes);
 
          ipSecService.deleteIpSec(attributes);

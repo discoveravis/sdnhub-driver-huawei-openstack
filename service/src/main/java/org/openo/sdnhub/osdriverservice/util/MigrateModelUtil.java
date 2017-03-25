@@ -233,7 +233,9 @@ public class MigrateModelUtil {
      */
     private static VpnIkePolicy convertIke(SbiNeIpSec dcGwIpSecConnection) {
         SbiIkePolicy ikePolicy = dcGwIpSecConnection.getIkePolicy();
-
+        if (ikePolicy == null) {
+            return null;
+        }
         VpnIkePolicy ike = new VpnIkePolicy();
         ike.setDescription(dcGwIpSecConnection.getName());
         ike.setTenantId(dcGwIpSecConnection.getTenantId());
@@ -327,7 +329,10 @@ public class MigrateModelUtil {
         conn.setPeerId(dcGwIpSecConnection.getPeerAddress());
         conn.setPeerCidrs(peerCidrList);
         //TODO(mrkanag): add decryption if required here
-        conn.setPsk(dcGwIpSecConnection.getIkePolicy().getPsk());
+        if(dcGwIpSecConnection.getIkePolicy() != null)
+        {
+            conn.setPsk(dcGwIpSecConnection.getIkePolicy().getPsk());
+        }
 
         conn.setSubnets(null);
 
@@ -434,10 +439,6 @@ public class MigrateModelUtil {
                 underlays.setVpnServiceId(mapping.getUnderlayId(), mapping.getAction());
             } else if("vpnIpSecSiteConnectionId".equals(mapping.getUnderlayType())) {
                 underlays.setVpnIpSecSiteConnectionId(mapping.getUnderlayId(), mapping.getAction());
-            } else if("floatingIpId".equals(mapping.getUnderlayType())) {
-                underlays.setFloatingIpId(mapping.getUnderlayId(), mapping.getAction());
-            } else if("sourceAddress".equals(mapping.getUnderlayType())) {
-                underlays.setSourceAddress(mapping.getUnderlayId(), mapping.getAction());
             } else if("sourceLanCidrs".equals(mapping.getUnderlayType())) {
                 underlays.setSourceLanCidrs(mapping.getUnderlayId(), mapping.getAction());
             } else if("projectId".equals(mapping.getUnderlayType())) {

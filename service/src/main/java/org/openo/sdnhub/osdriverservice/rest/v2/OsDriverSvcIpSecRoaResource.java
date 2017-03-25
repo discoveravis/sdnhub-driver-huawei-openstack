@@ -107,15 +107,15 @@ public class OsDriverSvcIpSecRoaResource {
                 OsIpSec osIpSec = MigrateModelUtil.convert(dcGwIpSecConn);
 
                 osIpSec = this.service.createIpSec(ctrlUuid, osIpSec);
-                dcGwIpSecConn.getIkePolicy().setExternalId(osIpSec.getVpnIkePolicy().getId());
                 if (dcGwIpSecConn.getIpSecPolicy() != null) {
                     dcGwIpSecConn.getIpSecPolicy().setExternalId(osIpSec.getVpnIpSecPolicy().getId());
                 }
-                dcGwIpSecConn.getIkePolicy().setExternalId(osIpSec.getVpnIkePolicy().getId());
+                if (dcGwIpSecConn.getIkePolicy() != null) {
+                    dcGwIpSecConn.getIkePolicy().setExternalId(osIpSec.getVpnIkePolicy().getId());
+                }
+
                 dcGwIpSecConn.setExternalId(osIpSec.getVpnService().getId());
                 dcGwIpSecConn.setExternalIpSecId(osIpSec.getVpnIpSecSiteConnection().getId());
-
-                dcGwIpSecConn.setSourceAddress(osIpSec.getAttributes().getSourceAddress());
                 dcGwIpSecConn.setSourceLanCidrs(osIpSec.getAttributes().getSourceLanCidrs());
 
                 resultRsp.getSuccessed().add(dcGwIpSecConn);

@@ -121,10 +121,6 @@ public class OsIpSec {
 
         private String vpnIpSecSiteConnectionId = null;
 
-        private String floatingIpId = null;
-
-        private String sourceAddress = null;
-
         private String sourceLanCidrs = null;
 
         private String projectId = null;
@@ -257,24 +253,6 @@ public class OsIpSec {
         public void setVpnIpSecSiteConnectionId(String vpnIpSecSiteConnectionId, String action) {
             this.vpnIpSecSiteConnectionId = vpnIpSecSiteConnectionId;
             this.put("vpnIpSecSiteConnectionId", vpnIpSecSiteConnectionId, action);
-        }
-
-        public String getFloatingIpId() {
-            return floatingIpId;
-        }
-
-        public void setFloatingIpId(String floatingIpId, String action) {
-            this.floatingIpId = floatingIpId;
-            this.put("floatingIpId", floatingIpId, action);
-        }
-
-        public String getSourceAddress() {
-            return sourceAddress;
-        }
-
-        public void setSourceAddress(String sourceAddress, String action) {
-            this.sourceAddress = sourceAddress;
-            this.put("sourceAddress", sourceAddress, action);
         }
 
         public String getSourceLanCidrs() {

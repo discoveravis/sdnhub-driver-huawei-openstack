@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.openo.baseservice.remoteservice.exception.ServiceException;
 import org.openo.sdnhub.osdriverservice.dao.model.OverlayUnderlayMapping;
 import org.openo.sdnhub.osdriverservice.nbi.model.SbiIkePolicy;
+import org.openo.sdnhub.osdriverservice.nbi.model.SbiIpSecPolicy;
 import org.openo.sdnhub.osdriverservice.nbi.model.SbiNeIpSec;
 import org.openo.sdnhub.osdriverservice.sbi.model.OsIpSec;
 import org.openo.sdnhub.osdriverservice.sbi.model.OsSubnet;
@@ -237,5 +238,22 @@ public class MigrateModelUtilTest {
         dcGwIpSecConnection.setPeerLanCidrs("[{\"ipv4\":\"10.21.3.0\",\"ipMask\":\"24\"}]");
         org.openo.sdnhub.osdriverservice.sbi.model.OsIpSec osIpSec = MigrateModelUtil.convert(dcGwIpSecConnection);
         assertTrue(osIpSec != null);
+    }
+    @Test (expected = NullPointerException.class)
+    public void testConvertNull() {
+        SbiNeIpSec snips = new SbiNeIpSec();
+        MigrateModelUtil.convert(snips);
+    }
+
+    @Test (expected = NullPointerException.class)
+    public void testConvertNotNullForIpSec() {
+        SbiNeIpSec snips = new SbiNeIpSec();
+        SbiIpSecPolicy ipSecPolicy = new SbiIpSecPolicy();
+        ipSecPolicy.setAuthAlgorithm("jhc");
+        ipSecPolicy.setEncapsulationMode("encapsulationMode");
+        ipSecPolicy.setEncryptionAlgorithm("encryptionAlgorithm");
+        ipSecPolicy.setTransformProtocol("transformProtocol");
+        snips.setIpSecPolicy(ipSecPolicy);
+        MigrateModelUtil.convert(snips);
     }
 }
