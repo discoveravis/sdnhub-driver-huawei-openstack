@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.openo.sdnhub.osdriverservice.openstack.client.exception;
 
 import static org.junit.Assert.assertTrue;
@@ -27,17 +28,16 @@ import org.openo.sdnhub.osdriverservice.openstack.client.exception.OpenStackExce
  * @version SDNHUB 0.5 September 20, 2016
  */
 public class OpenStackExceptionTest {
+
     @Test
     public void testEqual() {
         OpenStackException openStackException = new OpenStackException("throw");
         OpenStackException openStackException1 = new OpenStackException("throw");
         OpenStackException openStackException2 = new OpenStackException("throw");
-        OpenStackException openStackException4 = new OpenStackException("throw");
-        OpenStackException openStackException3 = new OpenStackException(200, 100, "throw");
-        OpenStackException openStackException5 = new OpenStackException(100, "throw");
         openStackException.setErrorCode(123);
         openStackException1.setErrorCode(123);
         openStackException2.setErrorCode(111);
+        OpenStackException openStackException4 = new OpenStackException("throw");
         openStackException4.setErrorCode(123);
         openStackException.setHttpCode(500);
         openStackException1.setHttpCode(500);
@@ -52,6 +52,8 @@ public class OpenStackExceptionTest {
         openStackException.getMessage();
         openStackException.getErrorCode();
         openStackException.getHttpCode();
+        openStackException.equals(openStackException.equals(new Object()));
+
         assertTrue(true);
     }
 

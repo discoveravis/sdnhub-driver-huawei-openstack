@@ -341,6 +341,47 @@ public class OsDriverSvcIpSecResourceTest {
         assertTrue(r1.getHttpCode() == 200);
     }
 
+    @Test
+    public void testUpdateIpSecException() throws ServiceException {
+        new MockUp<ValidationUtil>() {
+
+            @Mock
+            public void validateModel(Object obj) throws ServiceException {
+
+            }
+        };
+
+        SbiNeIpSec dcGwIpSecConnection = new SbiNeIpSec();
+        dcGwIpSecConnection.setUuid("uuid!23");
+        SbiIkePolicy ikePolicy = new SbiIkePolicy();
+        ikePolicy.setLifeTime("7200");
+        ikePolicy.setAuthAlgorithm("authAlgorithm");
+        ikePolicy.setEncryptionAlgorithm("encryptionAlgorith");
+        ikePolicy.setIkeVersion("ikeVersion");
+        ikePolicy.setPfs("pfs");
+        dcGwIpSecConnection.setIkePolicy(ikePolicy);
+
+        SbiIpSecPolicy ipSecPolicy = new SbiIpSecPolicy();
+        ipSecPolicy.setLifeTime("7200");
+        ipSecPolicy.setEncapsulationMode("encapsulationMode");
+        ipSecPolicy.setTransformProtocol("transformProtocol");
+        ipSecPolicy.setPfs("pfs");
+        dcGwIpSecConnection.setIpSecPolicy(ipSecPolicy);
+
+        dcGwIpSecConnection.setTenantId("tenantId");
+        dcGwIpSecConnection.setActiveStatus("None");
+        dcGwIpSecConnection.setPeerLanCidrs("[{\"ipv4\":\"10.21.3.0\",\"ipMask\":\"24\"}]");
+        dcGwIpSecConnection.setPeerAddress("peerAddress");
+        List<SbiNeIpSec> ipSecConnList = new ArrayList<SbiNeIpSec>();
+        ipSecConnList.add(dcGwIpSecConnection);
+        System.out.println(JsonUtil.toJson(ipSecConnList));
+        HttpServletRequest request = new MockHttpServletRequest();
+        ResultRsp<SbiNeIpSec> r1 = roaSource.updateIpSec(request, "ctrlUUIT", "123", dcGwIpSecConnection);
+        assertTrue(r1.getHttpCode() == 200);
+    }
+
+
+
 
     @Test
     public void testCreateIpSecBranch() throws ServiceException {
@@ -704,6 +745,41 @@ public class OsDriverSvcIpSecResourceTest {
 
         HttpServletRequest request = new MockHttpServletRequest();
         HttpServletResponse response = new MockHttpServletResponse();
+        ResultRsp<SbiNeIpSec> result = roaSource.deleteIpSec(request, "ctrlUuidParam", ipSecConnList);
+        assertTrue(result.getHttpCode() == 200);
+
+        ResultRsp<SbiNeIpSec> result1 = roaSource.deleteIpSec(request, "ctrlUuidParam", ipSecConnList);
+        assertTrue(result1.getHttpCode() == 200);
+    }
+
+    @Test
+    public void testDeleteIpSecException() throws ServiceException {
+
+        SbiNeIpSec dcGwIpSecConnection = new SbiNeIpSec();
+        dcGwIpSecConnection.setUuid("uuid!23");
+        SbiIkePolicy ikePolicy = new SbiIkePolicy();
+        ikePolicy.setLifeTime("7200");
+        ikePolicy.setAuthAlgorithm("authAlgorithm");
+        ikePolicy.setIkeVersion("ikeVersion");
+        ikePolicy.setPfs("pfs");
+        dcGwIpSecConnection.setIkePolicy(ikePolicy);
+
+        SbiIpSecPolicy ipSecPolicy = new SbiIpSecPolicy();
+        ipSecPolicy.setLifeTime("7200");
+        ipSecPolicy.setAuthAlgorithm("authAlgorithm");
+        ipSecPolicy.setEncapsulationMode("encapsulationMode");
+        ipSecPolicy.setTransformProtocol("transformProtocol");
+        ipSecPolicy.setPfs("pfs");
+        dcGwIpSecConnection.setIpSecPolicy(ipSecPolicy);
+
+        dcGwIpSecConnection.setTenantId("tenantId");
+        dcGwIpSecConnection.setActiveStatus("adminStatus");
+        dcGwIpSecConnection.setPeerLanCidrs("123,123,342,34343");
+        dcGwIpSecConnection.setPeerAddress("peerAddress");
+        List<SbiNeIpSec> ipSecConnList = new ArrayList<SbiNeIpSec>();
+        ipSecConnList.add(dcGwIpSecConnection);
+
+        HttpServletRequest request = new MockHttpServletRequest();
         ResultRsp<SbiNeIpSec> result = roaSource.deleteIpSec(request, "ctrlUuidParam", ipSecConnList);
         assertTrue(result.getHttpCode() == 200);
 

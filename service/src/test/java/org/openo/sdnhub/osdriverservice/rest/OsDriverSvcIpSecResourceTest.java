@@ -46,7 +46,6 @@ import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnIkePolicy;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnIpSecPolicy;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnIpSecSiteConnection;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnService;
-import org.openo.sdnhub.osdriverservice.rest.OsDriverSvcIpSecRoaResource;
 import org.openo.sdnhub.osdriverservice.util.DaoUtil;
 import org.openo.sdno.overlayvpn.brs.invdao.CommParamDao;
 import org.openo.sdno.overlayvpn.brs.invdao.ControllerDao;

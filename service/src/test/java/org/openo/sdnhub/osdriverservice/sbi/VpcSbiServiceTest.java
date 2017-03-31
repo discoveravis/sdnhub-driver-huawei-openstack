@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openo.baseservice.remoteservice.exception.ServiceException;
 import org.openo.sdnhub.osdriverservice.dao.model.OverlayUnderlayMapping;
+import org.openo.sdnhub.osdriverservice.nbi.VpcNbiService;
 import org.openo.sdnhub.osdriverservice.openstack.client.OpenStackClient;
 import org.openo.sdnhub.osdriverservice.openstack.client.OpenStackCredentials;
 import org.openo.sdnhub.osdriverservice.openstack.client.exception.OpenStackException;
@@ -37,6 +38,10 @@ import org.openo.sdnhub.osdriverservice.openstack.client.model.Network;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.Project;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.Router;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.Subnet;
+import org.openo.sdnhub.osdriverservice.sbi.model.BaseUnderlays;
+import org.openo.sdnhub.osdriverservice.sbi.model.OsSubnet;
+import org.openo.sdnhub.osdriverservice.sbi.model.OsVpc;
+import org.openo.sdnhub.osdriverservice.sbi.model.OsVpc.Underlays;
 import org.openo.sdnhub.osdriverservice.util.ControllerUtil;
 import org.openo.sdnhub.osdriverservice.util.DaoUtil;
 
@@ -45,7 +50,7 @@ import mockit.MockUp;
 
 public class VpcSbiServiceTest {
 
-    /*IVpcNbiService service = null;
+    VpcNbiService service = null;
 
     Network network = null;
 
@@ -57,122 +62,6 @@ public class VpcSbiServiceTest {
         this.network.setName("network123");
         this.network.setProjectId("test/osdriver");
         this.service = new VpcNbiService();
-    }
-
-    @Test
-    public void testCreateVpcNormal() throws ServiceException {
-        new MockUp<OpenStackHttpConnection>() {
-
-            @Mock
-            public void login() throws OpenStackException {
-                return;
-            }
-
-        };
-        new MockUp<OpenStackClient>() {
-
-            @Mock
-            public Network getPublicNetwork() throws OpenStackException {
-                return VpcSbiServiceTest.this.network;
-            }
-
-        };
-        new MockUp<OpenStackClient>() {
-
-            @Mock
-            public Project getProject(String projectName) throws OpenStackException {
-                Project proj = new Project();
-                proj.setDescription("test123");
-                proj.setId("test123");
-                proj.setName("test123");
-                return proj;
-            }
-
-            @Mock
-            public Router getRounter(String name) throws OpenStackException {
-                Router router = new Router();
-                Router.ExternalGatewayInfo externalGatewayInfo = new Router.ExternalGatewayInfo();
-                List<Map<String, String>> externalFixedIps = new ArrayList<Map<String, String>>();
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("ip_address", "1.1.1.1");
-                externalFixedIps.add(map);
-                externalGatewayInfo.setExternalFixedIps(externalFixedIps);
-                externalGatewayInfo.setEnableSnat(true);
-                externalGatewayInfo.setNetworkId("1234");
-                router.setExternalGatewayInfo(externalGatewayInfo);
-                router.setId("router123");
-                router.setName("router123");
-                router.setProjectId("test/osdriver");
-                return router;
-            }
-
-        };
-
-        OsVpc vpc = new OsVpc();
-
-        OsVpc.Underlays attributes = new OsVpc.Underlays();
-        attributes.setProjectId("test/osdriver", "active");
-        attributes.setPublicNetworkId("test123", "active");
-        attributes.setRouterId("router123", "active");
-        vpc.setAttributes(attributes);
-        vpc.setCidr("testcidr");
-        vpc.setDomainName("com.test");
-        vpc.setGatewayIp("1.1.1.1");
-        vpc.setOverlayId("test123");
-        vpc.setProjectName("test/osdriver");
-        OsVpc createdVpc = this.service.createVpc("TEST", vpc);
-        assertTrue(createdVpc.getGatewayIp().equals("1.1.1.1"));
-    }
-
-    @Test(expected = ServiceException.class)
-    public void testCreateVpcException() throws ServiceException {
-        new MockUp<OpenStackHttpConnection>() {
-
-            @Mock
-            public void login() throws OpenStackException {
-                return;
-            }
-
-        };
-        new MockUp<OpenStackClient>() {
-
-            @Mock
-            public Network getPublicNetwork() throws OpenStackException {
-                return VpcSbiServiceTest.this.network;
-            }
-
-        };
-        new MockUp<OpenStackClient>() {
-
-            @Mock
-            public Project getProject(String projectName) throws OpenStackException {
-                Project proj = new Project();
-                proj.setDescription("test123");
-                proj.setId("test123");
-                proj.setName("test123");
-                return proj;
-            }
-
-            @Mock
-            public Router getRounter(String name) throws OpenStackException {
-                throw new OpenStackException(404, "Not found");
-            }
-
-        };
-
-        OsVpc vpc = new OsVpc();
-
-        OsVpc.Underlays attributes = new OsVpc.Underlays();
-        attributes.setProjectId("test/osdriver", "active");
-        attributes.setPublicNetworkId("test123", "active");
-        attributes.setRouterId("router123", "active");
-        vpc.setAttributes(attributes);
-        vpc.setCidr("testcidr");
-        vpc.setDomainName("com.test");
-        vpc.setGatewayIp("1.1.1.1");
-        vpc.setOverlayId("test123");
-        vpc.setProjectName("test/osdriver");
-        this.service.createVpc("TEST", vpc);
     }
 
     @Test(expected = ServiceException.class)
@@ -258,6 +147,232 @@ public class VpcSbiServiceTest {
                 return new OpenStackClient(new OpenStackCredentials(), "test123");
             }
         };
+
+        this.service.deleteVpc("controller123", "vpc123");
+        assertTrue(true);
+    }
+
+    @Test
+    public void testDeleteVpcNormalForRouterId() throws ServiceException {
+        new MockUp<OpenStackHttpConnection>() {
+
+            @Mock
+            public void login() throws OpenStackException {
+                return;
+            }
+
+        };
+        new MockUp<OpenStackHttpConnection>() {
+
+            @Mock
+            public HttpResult delete(final HttpInput input) throws OpenStackException {
+                HttpResult result = new HttpResult();
+                result.setStatus(200);
+                return result;
+            }
+
+        };
+        new MockUp<DaoUtil>() {
+
+            @Mock
+            public List<OverlayUnderlayMapping> getChildren(Class<OverlayUnderlayMapping> clazz, String overlayId)
+                    throws ServiceException {
+                List<OverlayUnderlayMapping> mappingList = new ArrayList<OverlayUnderlayMapping>();
+                OverlayUnderlayMapping mapping = new OverlayUnderlayMapping();
+                mapping.setAction("d"); // for delete
+                mapping.setControllerId("TEST");
+                mapping.setOverlayId("overlay123");
+                mapping.setUnderlayId("underlay123");
+                mapping.setUnderlayTenantId("test123");
+                mapping.setUnderlayType("routerId");
+                mapping.setUuid("uuid123");
+                mappingList.add(mapping);
+                return mappingList;
+            }
+
+            @Mock
+            public void delete(Class<OverlayUnderlayMapping> clazz, String uuid) throws ServiceException {
+                return;
+            }
+        };
+        new MockUp<ControllerUtil>() {
+
+            @Mock
+            public OpenStackClient createOpenStackClient(String ctrlUuid) throws ServiceException, OpenStackException {
+                return new OpenStackClient(new OpenStackCredentials(), "test1123");
+            }
+        };
+
+        new MockUp<ControllerUtil>() {
+
+            @Mock
+            public OpenStackClient createOpenStackClient(String ctrlUuid) throws ServiceException, OpenStackException {
+                return new OpenStackClient(new OpenStackCredentials(), "test123");
+            }
+        };
+
+        new MockUp<BaseUnderlays>() {
+
+            @Mock
+            public Map<String, String> getResourceActions(){
+
+                Map<String,String> map = new HashMap<>();
+                map.put("ResourceActions", "c");
+                return map;
+            }
+        };
+
+
+        this.service.deleteVpc("controller123", "vpc123");
+        assertTrue(true);
+    }
+
+    @Test
+    public void testDeleteVpcNormalForProjectId() throws ServiceException {
+        new MockUp<OpenStackHttpConnection>() {
+
+            @Mock
+            public void login() throws OpenStackException {
+                return;
+            }
+
+        };
+        new MockUp<OpenStackHttpConnection>() {
+
+            @Mock
+            public HttpResult delete(final HttpInput input) throws OpenStackException {
+                HttpResult result = new HttpResult();
+                result.setStatus(200);
+                return result;
+            }
+
+        };
+        new MockUp<DaoUtil>() {
+
+            @Mock
+            public List<OverlayUnderlayMapping> getChildren(Class<OverlayUnderlayMapping> clazz, String overlayId)
+                    throws ServiceException {
+                List<OverlayUnderlayMapping> mappingList = new ArrayList<OverlayUnderlayMapping>();
+                OverlayUnderlayMapping mapping = new OverlayUnderlayMapping();
+                mapping.setAction("d"); // for delete
+                mapping.setControllerId("TEST");
+                mapping.setOverlayId("overlay123");
+                mapping.setUnderlayId("c");
+                mapping.setUnderlayTenantId("test123");
+                mapping.setUnderlayType("projectId");
+                mapping.setUuid("uuid123");
+                mappingList.add(mapping);
+                return mappingList;
+            }
+
+            @Mock
+            public void delete(Class<OverlayUnderlayMapping> clazz, String uuid) throws ServiceException {
+                return;
+            }
+        };
+        new MockUp<ControllerUtil>() {
+
+            @Mock
+            public OpenStackClient createOpenStackClient(String ctrlUuid) throws ServiceException, OpenStackException {
+                return new OpenStackClient(new OpenStackCredentials(), "test1223");
+            }
+        };
+
+        new MockUp<ControllerUtil>() {
+
+            @Mock
+            public OpenStackClient createOpenStackClient(String ctrlUuid) throws ServiceException, OpenStackException {
+                return new OpenStackClient(new OpenStackCredentials(), "test123");
+            }
+        };
+
+        new MockUp<BaseUnderlays>() {
+
+            @Mock
+            public Map<String, String> getResourceActions(){
+
+                Map<String,String> map = new HashMap<>();
+                map.put("ResourceActions", "c");
+                return map;
+            }
+        };
+
+
+        this.service.deleteVpc("controller123", "vpc123");
+        assertTrue(true);
+    }
+
+    @Test
+    public void testDeleteVpcNormalForpublicNwId() throws ServiceException {
+        new MockUp<OpenStackHttpConnection>() {
+
+            @Mock
+            public void login() throws OpenStackException {
+                return;
+            }
+
+        };
+        new MockUp<OpenStackHttpConnection>() {
+
+            @Mock
+            public HttpResult delete(final HttpInput input) throws OpenStackException {
+                HttpResult result = new HttpResult();
+                result.setStatus(200);
+                return result;
+            }
+
+        };
+        new MockUp<DaoUtil>() {
+
+            @Mock
+            public List<OverlayUnderlayMapping> getChildren(Class<OverlayUnderlayMapping> clazz, String overlayId)
+                    throws ServiceException {
+                List<OverlayUnderlayMapping> mappingList = new ArrayList<OverlayUnderlayMapping>();
+                OverlayUnderlayMapping mapping = new OverlayUnderlayMapping();
+                mapping.setAction("c"); // for delete
+                mapping.setControllerId("TEST");
+                mapping.setOverlayId("overlay123");
+                mapping.setUnderlayId("underlay123");
+                mapping.setUnderlayTenantId("test123");
+                mapping.setUnderlayType("publicNetworkId");
+                mapping.setUuid("uuid123");
+                mappingList.add(mapping);
+                return mappingList;
+            }
+
+            @Mock
+            public void delete(Class<OverlayUnderlayMapping> clazz, String uuid) throws ServiceException {
+                return;
+            }
+        };
+        new MockUp<ControllerUtil>() {
+
+            @Mock
+            public OpenStackClient createOpenStackClient(String ctrlUuid) throws ServiceException, OpenStackException {
+                return new OpenStackClient(new OpenStackCredentials(), "test1323");
+            }
+        };
+
+        new MockUp<ControllerUtil>() {
+
+            @Mock
+            public OpenStackClient createOpenStackClient(String ctrlUuid) throws ServiceException, OpenStackException {
+                return new OpenStackClient(new OpenStackCredentials(), "test123");
+            }
+        };
+
+        new MockUp<BaseUnderlays>() {
+
+            @Mock
+            public Map<String, String> getResourceActions(){
+
+                Map<String,String> map = new HashMap<>();
+                map.put("ResourceActions", "c");
+                return map;
+            }
+        };
+
+
         this.service.deleteVpc("controller123", "vpc123");
         assertTrue(true);
     }
@@ -287,7 +402,8 @@ public class VpcSbiServiceTest {
             @Mock
             public List<OverlayUnderlayMapping> getChildren(Class<OverlayUnderlayMapping> clazz, String overlayId)
                     throws ServiceException {
-                List<OverlayUnderlayMapping> mappingList = new ArrayList<OverlayUnderlayMapping>();
+                List<OverlayUnderlayMapping> mappingList =
+                        new ArrayList<OverlayUnderlayMapping>();
                 OverlayUnderlayMapping mapping = new OverlayUnderlayMapping();
                 mapping.setAction("aa"); // for delete
                 mapping.setControllerId("TEST");
@@ -383,7 +499,8 @@ public class VpcSbiServiceTest {
             @Mock
             public List<OverlayUnderlayMapping> getChildren(Class<OverlayUnderlayMapping> clazz, String overlayId)
                     throws ServiceException {
-                List<OverlayUnderlayMapping> mappingList = new ArrayList<OverlayUnderlayMapping>();
+                List<OverlayUnderlayMapping>
+                mappingList = new ArrayList<OverlayUnderlayMapping>();
                 OverlayUnderlayMapping mapping = new OverlayUnderlayMapping();
                 mapping.setAction("aa"); // for delete
                 mapping.setControllerId("TEST");
@@ -496,10 +613,11 @@ public class VpcSbiServiceTest {
             @Mock
             public Network getNetwork(String name) {
 
-                 * Network network = new Network();
-                 * network.setAdminStateUp(true); network.setId("id1234");
-                 * network.setName("network123");
-                 * network.setProjectId("test/osdriver");
+                Network network = new Network();
+                network.setAdminStateUp(true);
+                network.setId("id1234");
+                network.setName("network123");
+                network.setProjectId("test/osdriver");
 
                 return VpcSbiServiceTest.this.network;
             }
@@ -1370,5 +1488,5 @@ public class VpcSbiServiceTest {
         this.service.deleteSubnet("TEST", "subnetid");
         assertTrue(true);
     }
-*/
+
 }
