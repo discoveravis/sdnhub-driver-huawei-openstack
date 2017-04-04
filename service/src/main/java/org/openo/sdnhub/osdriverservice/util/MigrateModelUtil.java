@@ -43,6 +43,7 @@ import org.openo.sdno.overlayvpn.model.ipsec.IpSecPolicy;
 import org.openo.sdno.overlayvpn.model.netmodel.ipsec.DcGwIpSecConnection;
 import org.openo.sdno.overlayvpn.model.netmodel.vpc.Subnet;
 import org.openo.sdno.overlayvpn.model.netmodel.vpc.Vpc;
+import org.openo.sdno.ssl.EncryptionUtil;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -328,10 +329,14 @@ public class MigrateModelUtil {
         conn.setPeerAddress(dcGwIpSecConnection.getPeerAddress());
         conn.setPeerId(dcGwIpSecConnection.getPeerAddress());
         conn.setPeerCidrs(peerCidrList);
-        //TODO(mrkanag): add decryption if required here
-        if(dcGwIpSecConnection.getIkePolicy() != null)
-        {
-            conn.setPsk(dcGwIpSecConnection.getIkePolicy().getPsk());
+
+        if(dcGwIpSecConnection.getIkePolicy() != null && dcGwIpSecConnection.getIkePolicy().getPsk() != null) {
+            char[] psk = null;
+            try {
+                psk = EncryptionUtil.decode(dcGwIpSecConnection.getIkePolicy().getPsk().toCharArray());
+            } catch(Exception e) {
+            }
+            conn.setPsk(String.valueOf(psk));
         }
 
         conn.setSubnets(null);

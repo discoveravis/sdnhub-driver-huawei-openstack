@@ -59,6 +59,7 @@ import org.openo.sdno.overlayvpn.brs.model.ControllerMO;
 import org.openo.sdno.overlayvpn.errorcode.ErrorCode;
 import org.openo.sdno.overlayvpn.result.ResultRsp;
 import org.openo.sdno.overlayvpn.util.check.ValidationUtil;
+import org.openo.sdno.ssl.EncryptionUtil;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -188,6 +189,7 @@ public class OsDriverSvcIpSecResourceTest {
         ikePolicy.setEncryptionAlgorithm("encryptionAlgorith");
         ikePolicy.setIkeVersion("ikeVersion");
         ikePolicy.setPfs("pfs");
+        ikePolicy.setPsk("psk");
         dcGwIpSecConnection.setIkePolicy(ikePolicy);
 
         SbiIpSecPolicy ipSecPolicy = new SbiIpSecPolicy();
@@ -320,6 +322,7 @@ public class OsDriverSvcIpSecResourceTest {
         ikePolicy.setAuthAlgorithm("authAlgorithm");
         ikePolicy.setEncryptionAlgorithm("encryptionAlgorith");
         ikePolicy.setIkeVersion("ikeVersion");
+        ikePolicy.setPsk("psk");
         ikePolicy.setPfs("pfs");
         dcGwIpSecConnection.setIkePolicy(ikePolicy);
 
@@ -358,6 +361,7 @@ public class OsDriverSvcIpSecResourceTest {
         ikePolicy.setAuthAlgorithm("authAlgorithm");
         ikePolicy.setEncryptionAlgorithm("encryptionAlgorith");
         ikePolicy.setIkeVersion("ikeVersion");
+        ikePolicy.setPsk("psk");
         ikePolicy.setPfs("pfs");
         dcGwIpSecConnection.setIkePolicy(ikePolicy);
 
@@ -496,6 +500,7 @@ public class OsDriverSvcIpSecResourceTest {
         ikePolicy.setAuthAlgorithm("authAlgorithm");
         ikePolicy.setEncryptionAlgorithm("encryptionAlgorith");
         ikePolicy.setIkeVersion("ikeVersion");
+        ikePolicy.setPsk("psk");
         ikePolicy.setPfs("pfs");
         dcGwIpSecConnection.setIkePolicy(ikePolicy);
 
@@ -600,6 +605,7 @@ public class OsDriverSvcIpSecResourceTest {
         ikePolicy.setLifeTime("7200");
         ikePolicy.setAuthAlgorithm("authAlgorithm");
         ikePolicy.setIkeVersion("ikeVersion");
+        ikePolicy.setPsk("psk");
         ikePolicy.setPfs("pfs");
         dcGwIpSecConnection.setIkePolicy(ikePolicy);
 
@@ -726,6 +732,7 @@ public class OsDriverSvcIpSecResourceTest {
         ikePolicy.setAuthAlgorithm("authAlgorithm");
         ikePolicy.setIkeVersion("ikeVersion");
         ikePolicy.setPfs("pfs");
+        ikePolicy.setPsk("psk");
         dcGwIpSecConnection.setIkePolicy(ikePolicy);
 
         SbiIpSecPolicy ipSecPolicy = new SbiIpSecPolicy();
@@ -770,6 +777,7 @@ public class OsDriverSvcIpSecResourceTest {
         ipSecPolicy.setEncapsulationMode("encapsulationMode");
         ipSecPolicy.setTransformProtocol("transformProtocol");
         ipSecPolicy.setPfs("pfs");
+        ikePolicy.setPsk("psk");
         dcGwIpSecConnection.setIpSecPolicy(ipSecPolicy);
 
         dcGwIpSecConnection.setTenantId("tenantId");
@@ -885,6 +893,7 @@ public class OsDriverSvcIpSecResourceTest {
         ikePolicy.setAuthAlgorithm("authAlgorithm");
         ikePolicy.setIkeVersion("ikeVersion");
         ikePolicy.setPfs("pfs");
+        ikePolicy.setPsk("psk");
         dcGwIpSecConnection.setIkePolicy(ikePolicy);
 
         SbiIpSecPolicy ipSecPolicy = new SbiIpSecPolicy();

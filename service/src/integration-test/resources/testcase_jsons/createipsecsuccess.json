@@ -31,6 +31,7 @@
                     "pfs": "Group5",
                     "lifeTime": "3600",
                     "ikeVersion": "v1",
+                    "psk": "0123456789123456",
                     "id": "7b347d20-6fa3-4e22-b744-c49ee235a123"
                 },
                 "ipSecPolicy": {
