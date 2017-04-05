@@ -211,7 +211,7 @@ public class MigrateModelUtil {
     }
 
     // ************************************v2 ********************************************
-    public static OsIpSec convert(SbiNeIpSec dcGwIpSecConnection) {
+    public static OsIpSec convert(SbiNeIpSec dcGwIpSecConnection) throws ServiceException {
 
         OsIpSec ipsec = new OsIpSec();
         ipsec.setOverlayId(dcGwIpSecConnection.getUuid());
@@ -308,9 +308,10 @@ public class MigrateModelUtil {
      *
      * @param dcGwIpSecConnection
      * @return
+     * @throws ServiceException
      * @since SDNHUB 0.5
      */
-    private static VpnIpSecSiteConnection convertConn(SbiNeIpSec dcGwIpSecConnection) {
+    private static VpnIpSecSiteConnection convertConn(SbiNeIpSec dcGwIpSecConnection) throws ServiceException {
 
         List<String> peerCidrList = new ArrayList<>();
         if(!dcGwIpSecConnection.getPeerLanCidrs().isEmpty()){
@@ -335,10 +336,10 @@ public class MigrateModelUtil {
             try {
                 psk = EncryptionUtil.decode(dcGwIpSecConnection.getIkePolicy().getPsk().toCharArray());
             } catch(Exception e) {
+                throw new ServiceException("Error while decoding psk", e);
             }
             conn.setPsk(String.valueOf(psk));
         }
-
         conn.setSubnets(null);
 
         return conn;

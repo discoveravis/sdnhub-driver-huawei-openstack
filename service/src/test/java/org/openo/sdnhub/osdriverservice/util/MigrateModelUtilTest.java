@@ -230,7 +230,7 @@ public class MigrateModelUtilTest {
     }
 
     @Test
-    public void testConvertNullIpSec() {
+    public void testConvertNullIpSec() throws ServiceException {
 
         SbiNeIpSec dcGwIpSecConnection = new SbiNeIpSec();
         SbiIkePolicy sbiIkePolicy = new SbiIkePolicy();
@@ -240,13 +240,13 @@ public class MigrateModelUtilTest {
         assertTrue(osIpSec != null);
     }
     @Test (expected = NullPointerException.class)
-    public void testConvertNull() {
+    public void testConvertNull() throws ServiceException {
         SbiNeIpSec snips = new SbiNeIpSec();
         MigrateModelUtil.convert(snips);
     }
 
     @Test (expected = NullPointerException.class)
-    public void testConvertNotNullForIpSec() {
+    public void testConvertNotNullForIpSec() throws ServiceException {
         SbiNeIpSec snips = new SbiNeIpSec();
         SbiIpSecPolicy ipSecPolicy = new SbiIpSecPolicy();
         ipSecPolicy.setAuthAlgorithm("jhc");
