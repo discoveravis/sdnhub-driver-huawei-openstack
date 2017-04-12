@@ -16,11 +16,9 @@
 
 package org.openo.sdnhub.osdriverservice.sbi;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openo.baseservice.remoteservice.exception.ServiceException;
-import org.openo.sdnhub.osdriverservice.nbi.model.SbiIp;
 import org.openo.sdnhub.osdriverservice.openstack.client.OpenStackClient;
 import org.openo.sdnhub.osdriverservice.openstack.client.exception.OpenStackException;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.Subnet;
@@ -29,7 +27,6 @@ import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnIpSecPolicy;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnIpSecSiteConnection;
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnService;
 import org.openo.sdnhub.osdriverservice.sbi.model.OsIpSec;
-import org.openo.sdno.framework.container.util.JsonUtil;
 
 
 /**
@@ -83,17 +80,18 @@ public class IpSecSbiService {
                 List<Subnet> subnets = client.listSubnetForNetowrkId(underlays.getPublicNetworkId());
 
                 //update the vpn subnet id
-                ipsec.getVpnService().setSubnetId(subnets.get(0).getId());
-
-                List <SbiIp> sourceCidrs = new ArrayList<>();
                 for (Subnet subnet: subnets) {
-                    String []tokens = subnet.getCidr().split("/");
-                    SbiIp ipa = new SbiIp();
-                    ipa.setIpv4(tokens[0]);
-                    ipa.setIpMask(tokens[1]);
-                    sourceCidrs.add(ipa);
+                    if(underlays.getSourceLanCidrs().contains(subnet.getCidr()))
+                    {
+                        ipsec.getVpnService().setSubnetId(subnet.getId());
+                        break;
+                    }
                 }
-                underlays.setSourceLanCidrs(JsonUtil.toJson(sourceCidrs), "u");
+
+                if(ipsec.getVpnService().getSubnetId() == null)
+                {
+                    throw new OpenStackException("No subnet found");
+                }
             }
         }
 

@@ -116,7 +116,6 @@ public class OsDriverSvcIpSecRoaResource {
 
                 dcGwIpSecConn.setExternalId(osIpSec.getVpnService().getId());
                 dcGwIpSecConn.setExternalIpSecId(osIpSec.getVpnIpSecSiteConnection().getId());
-                dcGwIpSecConn.setSourceLanCidrs(osIpSec.getAttributes().getSourceLanCidrs());
 
                 resultRsp.getSuccessed().add(dcGwIpSecConn);
             } catch (ServiceException e) {

@@ -221,6 +221,8 @@ public class MigrateModelUtil {
         ipsec.setVpnService(convertVpn(dcGwIpSecConnection));
         ipsec.setVpnIpSecSiteConnection(convertConn(dcGwIpSecConnection));
 
+        ipsec.getAttributes().setSourceLanCidrs(dcGwIpSecConnection.getSourceLanCidrs(), "u");
+
         return ipsec;
     }
 
