@@ -433,6 +433,21 @@ public class OpenStackClient {
     }
 
     /**
+     * Gets OpenStack Subnets
+     * Version {@value #NETWORK_V2}
+     * URI: {@value #URI_SUBNET}?name=<name>
+     * <br>
+     *
+     * @return
+     * @throws OpenStackException Throws exception if the operation fails.
+     * @since SDNHUB 0.5
+     */
+    public List<Subnet> listSubnets() throws OpenStackException {
+        return this.list(OpenStackClient.NEWORK_V2, OpenStackClient.URI_SUBNET, Subnet.class,
+                "subnets");
+    }
+
+    /**
      * Deletes OpenStack Subnet
      * Version {@value #NETWORK_V2}
      * URI: {@value #URI_SUBNET}/<subnetId>

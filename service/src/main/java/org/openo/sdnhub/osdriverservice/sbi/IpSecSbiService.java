@@ -77,7 +77,7 @@ public class IpSecSbiService {
             ipsec.getVpnIpSecSiteConnection().setTenantId(underlays.getProjectId());
 
             if (ipsec.getVpnService().getSubnetId() == null) {
-                List<Subnet> subnets = client.listSubnetForNetowrkId(underlays.getPublicNetworkId());
+                List<Subnet> subnets = client.listSubnets();
 
                 //update the vpn subnet id
                 for (Subnet subnet: subnets) {
