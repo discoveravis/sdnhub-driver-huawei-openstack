@@ -32,6 +32,10 @@ public class OsSubnet {
 
     private String adminStatus;
 
+    private Integer vni;
+
+    private String name;
+
     private OsSubnet.Underlays attributes = new OsSubnet.Underlays();
 
     public String getCidr() {
@@ -74,6 +78,22 @@ public class OsSubnet {
 
     public void setAdminStatus(String adminStatus) {
         this.adminStatus = adminStatus;
+    }
+
+    public Integer getVni() {
+        return vni;
+    }
+
+    public void setVni(Integer vni) {
+        this.vni = vni;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**

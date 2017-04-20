@@ -32,6 +32,8 @@ public class OsVpc {
 
     private String gatewayIp;
 
+    private String routerName;
+
     private String cidr;
 
     //TODO(mrkanag) is public network cidr required.
@@ -94,6 +96,14 @@ public class OsVpc {
 
     public void setOverlayId(String overlayId) {
         this.overlayId = overlayId;
+    }
+
+    public String getRouterName() {
+        return routerName;
+    }
+
+    public void setRouterName(String routerName) {
+        this.routerName = routerName;
     }
 
     /**

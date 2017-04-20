@@ -69,7 +69,7 @@ public class MigrateModelUtil {
 
     private static final int DPD_TIMEOUT = 120;
 
-    private static final int MTU = 1500;
+    private static final int MTU = 1800;
 
     private MigrateModelUtil() {
 
@@ -361,6 +361,7 @@ public class MigrateModelUtil {
         OsVpc osVpc = new OsVpc();
         osVpc.setProjectName(vpc.getProjectName());
         osVpc.setDomainName(vpc.getDomainName());
+        osVpc.setRouterName(vpc.getRouterName());
         osVpc.setOverlayId(vpc.getUuid());
         return osVpc;
     }
@@ -377,6 +378,8 @@ public class MigrateModelUtil {
         OsSubnet osSubnet = new OsSubnet();
         osSubnet.setCidr(subnet.getCidr());
         osSubnet.setOverlayId(subnet.getUuid());
+        osSubnet.setVni(subnet.getVni());
+        osSubnet.setName(subnet.getName());
         return osSubnet;
     }
 

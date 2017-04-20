@@ -80,17 +80,22 @@ public class VpcSbiService {
         vpc.getAttributes().setPublicNetworkId(publicNetwork.getId(), "u");
 
         Router router = null;
+        String routerName = vpc.getRouterName();
+        if (routerName == null || routerName.isEmpty()) {
+            routerName = Utils.getName(vpc.getOverlayId());
+        }
+
         try {
-            router = this.client.getRouter(Utils.getName(vpc.getOverlayId()));
+            router = this.client.getRouter(routerName);
             vpc.getAttributes().setRouterId(router.getId(), "u");
         } catch(NotFoundException e) {
-            LOGGER.error("Router " + vpc.getOverlayId() + "does not exist");
+            LOGGER.error("Router " + routerName + "does not exist");
             router = new Router();
-            router.setName(Utils.getName(vpc.getOverlayId()));
+            router.setName(routerName);
             router.setProjectId(project.getId());
             Router.ExternalGatewayInfo externalGwInfo = new Router.ExternalGatewayInfo();
             externalGwInfo.setNetworkId(publicNetwork.getId());
-            externalGwInfo.setEnableSnat(true);
+            externalGwInfo.setEnableSnat(false);
             router.setExternalGatewayInfo(externalGwInfo);
             router = this.client.createRouter(router);
             vpc.getAttributes().setRouterId(router.getId(), "c");
@@ -115,19 +120,23 @@ public class VpcSbiService {
     public OsSubnet createSubnet(OsSubnet subnet) throws OpenStackException {
         this.client.login();
         Network network = null;
+        String networkName = subnet.getName();
+        if (networkName == null || networkName.isEmpty()) {
+            networkName = Utils.getName(subnet.getOverlayId());
+        }
         try {
-            network = this.client.getNetwork(Utils.getName(subnet.getOverlayId()));
+            network = this.client.getNetwork(networkName);
             subnet.getAttributes().setVpcNetworkId(network.getId(), "u");
         } catch(NotFoundException e) {
-            LOGGER.warn("Network " + subnet.getAttributes().getVpcNetworkId() + " does not exist");
+            LOGGER.warn("Network " + networkName + " does not exist");
             network = new Network();
-            network.setName(Utils.getName(subnet.getOverlayId()));
+            network.setName(networkName);
             network.setAdminStateUp(true);
             network.setProjectId(subnet.getAttributes().getProjectId());
             OSNetworkConfig networkConfig = new OSNetworkConfig();
             network.setNetworkType(networkConfig.getNetworkType());
             network.setPhysicalNetwork(networkConfig.getPhysicalNetwork());
-            network.setSegmentationId(networkConfig.getSegmentId());
+            network.setSegmentationId(String.valueOf(subnet.getVni()));
             network = this.client.createNetwork(network);
             subnet.getAttributes().setVpcNetworkId(network.getId(), "c");
         }
@@ -138,13 +147,14 @@ public class VpcSbiService {
             subnet.setAdminStatus("down");
         }
         Subnet osSubnet = null;
+        String subnetName = networkName;
         try {
-            osSubnet = this.client.getSubnet(Utils.getName(subnet.getOverlayId()));
+            osSubnet = this.client.getSubnet(subnetName);
             subnet.getAttributes().setVpcSubnetId(osSubnet.getId(), "u");
         } catch(NotFoundException e) {
-            LOGGER.warn("Subnet " + subnet.getOverlayId() + " does not exist");
+            LOGGER.warn("Subnet " + subnetName + " does not exist");
             osSubnet = new org.openo.sdnhub.osdriverservice.openstack.client.model.Subnet();
-            osSubnet.setName(Utils.getName(subnet.getOverlayId()));
+            osSubnet.setName(subnetName);
             osSubnet.setNetworkId(network.getId());
             osSubnet.setCidr(subnet.getCidr());
             osSubnet.setProjectId(subnet.getAttributes().getProjectId());
