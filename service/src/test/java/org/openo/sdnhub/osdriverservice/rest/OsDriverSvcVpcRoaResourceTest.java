@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-17 Huawei Technologies Co., Ltd.
+ * Copyright 2016-2017 Huawei Technologies Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -182,7 +182,7 @@ public class OsDriverSvcVpcRoaResourceTest {
         HttpServletRequest request = new MockHttpServletRequest();
         HttpServletResponse response = new MockHttpServletResponse();
         Vpc vpc = new Vpc();
-        vpc.setName("name/name");
+        vpc.setName("d/p/r");
         vpc.setUuid("uuid");
         Vpc vpcReturn = roaVPC.createVpc(request, response, "name=id", vpc);
         assertTrue(vpcReturn != null);
@@ -280,7 +280,7 @@ public class OsDriverSvcVpcRoaResourceTest {
         HttpServletRequest request = new MockHttpServletRequest();
         HttpServletResponse response = new MockHttpServletResponse();
         Vpc vpc = new Vpc();
-        vpc.setName("name/name");
+        vpc.setName("d/p/r");
         vpc.setUuid("uuid");
         Vpc vpcReturn = roaVPC.createVpc(request, null, "name=id", vpc);
         assertTrue(vpcReturn != null);
