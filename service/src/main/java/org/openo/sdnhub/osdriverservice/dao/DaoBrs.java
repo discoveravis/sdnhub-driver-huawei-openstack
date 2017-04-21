@@ -29,6 +29,7 @@ import org.openo.sdnhub.osdriverservice.openstack.client.OpenStackCredentials;
 import org.openo.sdnhub.osdriverservice.util.ESRutil;
 import org.openo.sdnhub.osdriverservice.util.OSDriverConfig;
 import org.openo.sdnhub.osdriverservice.util.OSNetworkConfig;
+import org.openo.sdnhub.osdriverservice.util.SetupConfig;
 import org.openo.sdno.framework.container.util.JsonUtil;
 import org.openo.sdno.overlayvpn.brs.invdao.CommParamDao;
 import org.openo.sdno.overlayvpn.brs.invdao.ControllerDao;
@@ -126,13 +127,17 @@ public class DaoBrs<T> implements IDao<T>, IControllerDao {
         OSDriverConfig config = new OSDriverConfig();
         if(config.isEsrEnabled()) {
             Map<String, Object> controllerMap = ESRutil.getControllerDetails(ctrlUuid);
+            Map<String,String> setupMap = SetupConfig.getOsSetup((String)controllerMap.get("name"),
+                    (String)controllerMap.get("version"));
             try {
                 URL url = new URL((String)controllerMap.get("url"));
                 return new OpenStackCredentials().setIp(url.getHost()).setPort(Integer.toString(url.getPort()))
                         .setUsername((String)controllerMap.get("userName"))
                         .setPassword((String)controllerMap.get("password"))
                         .setDomain((String)controllerMap.get("domain"))
-                        .setSecured(url.getProtocol().equalsIgnoreCase("https"));
+                        .setSecured(url.getProtocol().equalsIgnoreCase("https"))
+                        .setVersion(setupMap.get("openstack_version"))
+                        .setProviderNetwork(setupMap.get("provider_network"));
             } catch(Exception ex) {
                 LOGGER.error("Error in getting controller", ex);
                 throw new ServiceException("Error in getting controller", ex);
@@ -153,11 +158,13 @@ public class DaoBrs<T> implements IDao<T>, IControllerDao {
         OSDriverConfig config = new OSDriverConfig();
         if(config.isEsrEnabled()) {
             Map<String, Object> controllerMap = ESRutil.getControllerDetails(ctrlUuid);
-            if (controllerMap.get("region") == null) {
+            Map<String,String> setupMap = SetupConfig.getOsSetup((String)controllerMap.get("name"),
+                    (String)controllerMap.get("version"));
+            if (setupMap.get("region") == null) {
                 OSNetworkConfig networkConfig = new OSNetworkConfig();
                 return networkConfig.getRegionId();
             } else {
-                return (String)controllerMap.get("region");
+                return setupMap.get("region");
             }
         }
         ControllerMO controller = (new ControllerDao()).getController(ctrlUuid);

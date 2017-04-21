@@ -22,6 +22,9 @@ import mockit.Mock;
 import mockit.MockUp;
 
 import org.apache.poi.ss.formula.functions.T;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.openo.baseservice.remoteservice.exception.ServiceException;
 import org.openo.baseservice.roa.util.restclient.RestfulParametes;
@@ -36,6 +39,7 @@ import org.openo.sdno.overlayvpn.brs.model.AuthInfo;
 import org.openo.sdno.overlayvpn.brs.model.CommParamMO;
 import org.openo.sdno.overlayvpn.brs.model.ControllerMO;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -46,14 +50,14 @@ public class DaoBrsTest {
 
     DaoBrs<T> dbs = new DaoBrs<>();
 
-    @Test(expected = ServiceException.class)
+    @Test
     public void testGetOpenStackCredentials() throws ServiceException {
 
         new MockUp<RestfulProxy>() {
 
             @Mock
             RestfulResponse get(String url, RestfulParametes restParametes)
-                    throws ServiceException, MalformedURLException {
+                    throws ServiceException, JsonGenerationException, JsonMappingException, IOException {
                 RestfulResponse res = new RestfulResponse();
                 res.setStatus(200);
                 Map<String, Object> driverInfoMap = new HashMap<>();
@@ -63,12 +67,73 @@ public class DaoBrsTest {
                 driverInfoMap.put("url", "https://www.google.com:8082");
                 driverInfoMap.put("userName", "Raju");
                 driverInfoMap.put("password", "raju");
-                res.setResponseJson(JsonUtil.toJson(driverInfoMap));
+                driverInfoMap.put("name", "vim");
+                driverInfoMap.put("version", "v1.0");
+                res.setResponseJson(new ObjectMapper().writeValueAsString(driverInfoMap));
                 return res;
             }
         };
 
-        dbs.getOpenStackCredentials("ihuihi15454");
+        OpenStackCredentials response = dbs.getOpenStackCredentials("ihuihi15454");
+        assertEquals(response.getPassword(), "raju");
+
+    }
+
+    @Test
+    public void testGetOpenStackCredentialsName() throws ServiceException {
+
+        new MockUp<RestfulProxy>() {
+
+            @Mock
+            RestfulResponse get(String url, RestfulParametes restParametes)
+                    throws ServiceException, JsonGenerationException, JsonMappingException, IOException {
+                RestfulResponse res = new RestfulResponse();
+                res.setStatus(200);
+                Map<String, Object> driverInfoMap = new HashMap<>();
+                driverInfoMap.put("instanceID", "usb12345");
+                driverInfoMap.put("domain", "java");
+                driverInfoMap.put("ip", "12.32.30");
+                driverInfoMap.put("url", "https://www.google.com:8082");
+                driverInfoMap.put("userName", "Raju");
+                driverInfoMap.put("password", "raju");
+                driverInfoMap.put("name", "name");
+                driverInfoMap.put("version", "v1.0");
+                res.setResponseJson(new ObjectMapper().writeValueAsString(driverInfoMap));
+                return res;
+            }
+        };
+
+        OpenStackCredentials response = dbs.getOpenStackCredentials("ihuihi15454");
+        assertEquals(response.getPassword(), "raju");
+
+    }
+
+    @Test
+    public void testGetOpenStackCredentialsVersion() throws ServiceException {
+
+        new MockUp<RestfulProxy>() {
+
+            @Mock
+            RestfulResponse get(String url, RestfulParametes restParametes)
+                    throws ServiceException, JsonGenerationException, JsonMappingException, IOException {
+                RestfulResponse res = new RestfulResponse();
+                res.setStatus(200);
+                Map<String, Object> driverInfoMap = new HashMap<>();
+                driverInfoMap.put("instanceID", "usb12345");
+                driverInfoMap.put("domain", "java");
+                driverInfoMap.put("ip", "12.32.30");
+                driverInfoMap.put("url", "https://www.google.com:8082");
+                driverInfoMap.put("userName", "Raju");
+                driverInfoMap.put("password", "raju");
+                driverInfoMap.put("name", "vim");
+                driverInfoMap.put("version", "version");
+                res.setResponseJson(new ObjectMapper().writeValueAsString(driverInfoMap));
+                return res;
+            }
+        };
+
+        OpenStackCredentials response = dbs.getOpenStackCredentials("ihuihi15454");
+        assertEquals(response.getPassword(), "raju");
 
     }
 
@@ -79,7 +144,7 @@ public class DaoBrsTest {
 
             @Mock
             RestfulResponse get(String url, RestfulParametes restParametes)
-                    throws ServiceException, MalformedURLException {
+                    throws ServiceException, JsonGenerationException, JsonMappingException, IOException {
                 RestfulResponse res = new RestfulResponse();
                 res.setStatus(200);
                 Map<String, Object> driverInfoMap = new HashMap<>();
@@ -119,8 +184,7 @@ public class DaoBrsTest {
         new MockUp<CommParamDao>() {
 
             @Mock
-            public List<CommParamMO> getCommParam (String controllerID)
-                    throws ServiceException {
+            public List<CommParamMO> getCommParam(String controllerID) throws ServiceException {
 
                 CommParamMO cmo = new CommParamMO();
                 cmo.setDescription("description");
@@ -206,8 +270,7 @@ public class DaoBrsTest {
         new MockUp<CommParamDao>() {
 
             @Mock
-            public List<CommParamMO> getCommParam(String controllerID)
-                    throws ServiceException {
+            public List<CommParamMO> getCommParam(String controllerID) throws ServiceException {
 
                 CommParamMO cmo = new CommParamMO();
                 cmo.setDescription("description");

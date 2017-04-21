@@ -41,6 +41,10 @@ public class OpenStackCredentials {
 
     private String token = null;
 
+    private String version = "kilo";
+
+    private String providerNetwork = null;
+
     /**
      * Constructor<br>
      *
@@ -130,8 +134,28 @@ public class OpenStackCredentials {
         return this;
     }
 
+
+    public String getVersion() {
+        return version;
+    }
+
+
+    public OpenStackCredentials setVersion(String version) {
+        this.version = version;
+        return this;
+    }
+
     public boolean isValid() {
         return (null != this.ip) && (null != this.username) && (null != this.password) && (null != this.port)
-                && (null != this.domain);
+                && (null != this.domain) && (null != this.version);
+    }
+
+    public String getProviderNetwork() {
+        return providerNetwork;
+    }
+
+    public OpenStackCredentials setProviderNetwork(String providerNetwork) {
+        this.providerNetwork = providerNetwork;
+        return this;
     }
 }

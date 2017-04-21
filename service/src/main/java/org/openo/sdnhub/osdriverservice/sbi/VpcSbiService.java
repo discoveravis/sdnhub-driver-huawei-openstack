@@ -135,7 +135,7 @@ public class VpcSbiService {
             network.setProjectId(subnet.getAttributes().getProjectId());
             OSNetworkConfig networkConfig = new OSNetworkConfig();
             network.setNetworkType(networkConfig.getNetworkType());
-            network.setPhysicalNetwork(networkConfig.getPhysicalNetwork());
+            network.setPhysicalNetwork(this.client.getProviderNetwork());
             network.setSegmentationId(String.valueOf(subnet.getVni()));
             network = this.client.createNetwork(network);
             subnet.getAttributes().setVpcNetworkId(network.getId(), "c");

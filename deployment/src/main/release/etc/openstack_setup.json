@@ -1,0 +1,24 @@
+{
+"openstack_setup" : [
+    {
+        "name": "CoreOpenStack",
+        "version": "V200R001C00",
+        "openstack_version": "kilo",
+        "region": "regionOne",
+        "provider_network": "datecentre"
+    },
+    {
+        "name": "Edge1OpenStack",
+        "version": "V200R001C00",
+        "openstack_version": "kilo",
+        "region": "RegionOne",
+        "provider_network": "default"
+    },
+    {
+        "name": "Edge2OpenStack",
+        "version": "V200R001C00",
+        "openstack_version": "kilo",
+        "region": "nova",
+        "provider_network": "default"
+    }]
+}

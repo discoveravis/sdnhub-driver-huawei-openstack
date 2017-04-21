@@ -91,6 +91,11 @@ public class OpenStackClient {
     private String regionName = null;
 
     /**
+     * OpenStack physcial network.
+     */
+    private String providerNetwork = null;
+
+    /**
      * Constructor.<br>
      *
      * @param credentials OpenStackCredentials
@@ -101,6 +106,7 @@ public class OpenStackClient {
     public OpenStackClient(OpenStackCredentials credentials, String regionName) throws OpenStackException {
         this.osConnection = new OpenStackHttpConnection(credentials);
         this.setRegionName(regionName);
+        this.setProviderNetwork(credentials.getProviderNetwork());
     }
 
     public void setRegionName(String regionName) {
@@ -712,5 +718,21 @@ public class OpenStackClient {
      */
     public void deleteVpnIpSecSiteConnection(String connId) throws OpenStackException {
         this.delete(NEWORK_V2, URI_IPSEC_SITE_CONN + "/" + connId);
+    }
+
+    /**
+     * Set the physical network
+     * @param providerNetwork
+     */
+    public void setProviderNetwork(String providerNetwork) {
+        this.providerNetwork = providerNetwork;
+    }
+
+    /**
+     * Retrieve the physical network
+     * @return
+     */
+    public String getProviderNetwork() {
+        return this.providerNetwork;
     }
 }
