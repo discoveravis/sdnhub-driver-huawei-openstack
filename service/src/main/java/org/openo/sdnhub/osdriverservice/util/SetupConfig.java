@@ -63,7 +63,7 @@ public class SetupConfig {
                 }
             }
         } catch(Exception ex) {
-            LOGGER.error("Exception in getting os setup :"+ex.toString());
+            LOGGER.error("Exception in getting os setup",ex);
         }
         return Collections.emptyMap();
     }
@@ -79,7 +79,7 @@ public class SetupConfig {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Exception in getting os setup",e);
         }
         return content.toString();
     }

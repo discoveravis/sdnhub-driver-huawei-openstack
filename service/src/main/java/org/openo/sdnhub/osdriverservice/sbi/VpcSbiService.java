@@ -152,7 +152,7 @@ public class VpcSbiService {
             osSubnet = this.client.getSubnet(subnetName);
             subnet.getAttributes().setVpcSubnetId(osSubnet.getId(), "u");
         } catch(NotFoundException e) {
-            LOGGER.warn("Subnet " + subnetName + " does not exist");
+            LOGGER.warn("Subnet " + subnetName + " does not exist"); // NOSONAR
             osSubnet = new org.openo.sdnhub.osdriverservice.openstack.client.model.Subnet();
             osSubnet.setName(subnetName);
             osSubnet.setNetworkId(network.getId());
