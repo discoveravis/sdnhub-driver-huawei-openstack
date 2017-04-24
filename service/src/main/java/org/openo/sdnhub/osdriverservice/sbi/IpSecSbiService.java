@@ -28,7 +28,6 @@ import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnIpSecSiteConne
 import org.openo.sdnhub.osdriverservice.openstack.client.model.VpnService;
 import org.openo.sdnhub.osdriverservice.sbi.model.OsIpSec;
 
-
 /**
  * Class for creating VPC service.<br>
  *
@@ -51,7 +50,7 @@ public class IpSecSbiService {
         this.client = client;
     }
 
-     /**
+    /**
      * <br>
      *
      * @param ipsec IPSec service object to be created.
@@ -64,32 +63,31 @@ public class IpSecSbiService {
         this.client.login();
         OsIpSec.Underlays underlays = ipsec.getAttributes();
 
-        if (ipsec.getVpcId() != null) {
-            //set all tenant id
-            if (ipsec.getVpnIpSecPolicy() != null) {
+        if(ipsec.getVpcId() != null) {
+            // set all tenant id
+            if(ipsec.getVpnIpSecPolicy() != null) {
                 ipsec.getVpnIpSecPolicy().setTenantId(underlays.getProjectId());
             }
-            if (ipsec.getVpnIkePolicy() != null) {
+            if(ipsec.getVpnIkePolicy() != null) {
                 ipsec.getVpnIkePolicy().setTenantId(underlays.getProjectId());
             }
             ipsec.getVpnService().setTenantId(underlays.getProjectId());
             ipsec.getVpnService().setRouterId(underlays.getRouterId());
             ipsec.getVpnIpSecSiteConnection().setTenantId(underlays.getProjectId());
 
-            if (ipsec.getVpnService().getSubnetId() == null) {
+            if(ipsec.getVpnService().getSubnetId() == null) {
                 List<Subnet> subnets = client.listSubnets();
 
-                //update the vpn subnet id
-                for (Subnet subnet: subnets) {
-                    if(underlays.getSourceLanCidrs().contains(subnet.getCidr()))
-                    {
+                // update the vpn subnet id
+                for(Subnet subnet : subnets) {
+                    String[] ips = subnet.getCidr().split("/");
+                    if(underlays.getSourceLanCidrs().contains(ips[0])) {
                         ipsec.getVpnService().setSubnetId(subnet.getId());
                         break;
                     }
                 }
 
-                if(ipsec.getVpnService().getSubnetId() == null)
-                {
+                if(ipsec.getVpnService().getSubnetId() == null) {
                     throw new OpenStackException("No subnet found");
                 }
             }
@@ -141,30 +139,32 @@ public class IpSecSbiService {
         this.client.login();
 
         VpnIpSecSiteConnection conn = ipsec.getVpnIpSecSiteConnection();
-        conn = this.client.updateVpnIpSecSiteConnection(ipsec.getAttributes().getVpnIpSecSiteConnectionId(), ipsec.getVpnIpSecSiteConnection());
+        conn = this.client.updateVpnIpSecSiteConnection(ipsec.getAttributes().getVpnIpSecSiteConnectionId(),
+                ipsec.getVpnIpSecSiteConnection());
         ipsec.setVpnIpSecSiteConnection(conn);
 
         this.client.logout();
 
         return ipsec;
     }
+
     /**
      * Delete IpSec
      * <br>
      *
      * @param underlays
      * @throws OpenStackException
-     * @since  SDNHUB 0.5
+     * @since SDNHUB 0.5
      */
     public void deleteIpSec(OsIpSec.Underlays underlays) throws OpenStackException {
         this.client.login();
 
         try {
-            //TODO(mrkanag) IpSec connection takes time to delete completely, so track it
+            // TODO(mrkanag) IpSec connection takes time to delete completely, so track it
             this.client.deleteVpnIpSecSiteConnection(underlays.getVpnIpSecSiteConnectionId());
             underlays.setVpnIpSecSiteConnectionId(underlays.getVpnIpSecSiteConnectionId(), "d");
 
-            //TODO(mrkanag) VpnService takes time to delete completely, so track it
+            // TODO(mrkanag) VpnService takes time to delete completely, so track it
             this.client.deleteVpnService(underlays.getVpnServiceId());
             underlays.setVpnServiceId(underlays.getVpnServiceId(), "d");
 
