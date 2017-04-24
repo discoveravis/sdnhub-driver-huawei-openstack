@@ -59,7 +59,6 @@ import org.openo.sdno.overlayvpn.brs.model.ControllerMO;
 import org.openo.sdno.overlayvpn.errorcode.ErrorCode;
 import org.openo.sdno.overlayvpn.result.ResultRsp;
 import org.openo.sdno.overlayvpn.util.check.ValidationUtil;
-import org.openo.sdno.ssl.EncryptionUtil;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -127,10 +126,10 @@ public class OsDriverSvcIpSecResourceTest {
             public CloseableHttpResponse execute(final HttpUriRequest request)
                     throws IOException, ClientProtocolException {
                 CloseableHttpResponseMock resp = new CloseableHttpResponseMock();
-                org.apache.http.message.BasicStatusLine bs = new org.apache.http.message.BasicStatusLine(
-                        new ProtocolVersion("bgp", 2, 1), 200, "success");
+                org.apache.http.message.BasicStatusLine bs =
+                        new org.apache.http.message.BasicStatusLine(new ProtocolVersion("bgp", 2, 1), 200, "success");
                 resp.setStatusLine(bs);
-                return (CloseableHttpResponse) resp;
+                return (CloseableHttpResponse)resp;
             }
         };
 
@@ -139,22 +138,22 @@ public class OsDriverSvcIpSecResourceTest {
             @Mock
             public <T> T readValue(String content, Class<T> valueType)
                     throws IOException, JsonParseException, JsonMappingException {
-                if (valueType.getName().contains("VpnIkePolicy")) {
+                if(valueType.getName().contains("VpnIkePolicy")) {
                     VpnIkePolicy vpn = new VpnIkePolicy();
                     vpn.setId("id");
-                    return (T) vpn;
-                } else if (valueType.getName().contains("VpnIpSecPolicy")) {
+                    return (T)vpn;
+                } else if(valueType.getName().contains("VpnIpSecPolicy")) {
                     VpnIpSecPolicy vpn = new VpnIpSecPolicy();
                     vpn.setId("id");
-                    return (T) vpn;
-                } else if (valueType.getName().contains("VpnService")) {
+                    return (T)vpn;
+                } else if(valueType.getName().contains("VpnService")) {
                     VpnService vpn = new VpnService();
                     vpn.setId("id");
-                    return (T) vpn;
-                } else if (valueType.getName().contains("VpnIpSecSiteConnection")) {
+                    return (T)vpn;
+                } else if(valueType.getName().contains("VpnIpSecSiteConnection")) {
                     VpnIpSecSiteConnection vpn = new VpnIpSecSiteConnection();
                     vpn.setId("id");
-                    return (T) vpn;
+                    return (T)vpn;
                 }
                 return null;
             }
@@ -202,7 +201,7 @@ public class OsDriverSvcIpSecResourceTest {
         dcGwIpSecConnection.setTenantId("tenantId");
         dcGwIpSecConnection.setActiveStatus("None");
         dcGwIpSecConnection.setPeerLanCidrs("[{\"ipv4\":\"10.21.3.0\",\"ipMask\":\"24\"}]");
-        dcGwIpSecConnection.setPeerAddress("peerAddress");
+        dcGwIpSecConnection.setPeerAddress("{\"ipv4\":\"10.21.3.0\",\"ipMask\":\"24\"}");
         List<SbiNeIpSec> ipSecConnList = new ArrayList<SbiNeIpSec>();
         ipSecConnList.add(dcGwIpSecConnection);
         System.out.println(JsonUtil.toJson(ipSecConnList));
@@ -261,10 +260,10 @@ public class OsDriverSvcIpSecResourceTest {
             public CloseableHttpResponse execute(final HttpUriRequest request)
                     throws IOException, ClientProtocolException {
                 CloseableHttpResponseMock resp = new CloseableHttpResponseMock();
-                org.apache.http.message.BasicStatusLine bs = new org.apache.http.message.BasicStatusLine(
-                        new ProtocolVersion("bgp", 2, 1), 200, "success");
+                org.apache.http.message.BasicStatusLine bs =
+                        new org.apache.http.message.BasicStatusLine(new ProtocolVersion("bgp", 2, 1), 200, "success");
                 resp.setStatusLine(bs);
-                return (CloseableHttpResponse) resp;
+                return (CloseableHttpResponse)resp;
             }
         };
 
@@ -273,22 +272,22 @@ public class OsDriverSvcIpSecResourceTest {
             @Mock
             public <T> T readValue(String content, Class<T> valueType)
                     throws IOException, JsonParseException, JsonMappingException {
-                if (valueType.getName().contains("VpnIkePolicy")) {
+                if(valueType.getName().contains("VpnIkePolicy")) {
                     VpnIkePolicy vpn = new VpnIkePolicy();
                     vpn.setId("id");
-                    return (T) vpn;
-                } else if (valueType.getName().contains("VpnIpSecPolicy")) {
+                    return (T)vpn;
+                } else if(valueType.getName().contains("VpnIpSecPolicy")) {
                     VpnIpSecPolicy vpn = new VpnIpSecPolicy();
                     vpn.setId("id");
-                    return (T) vpn;
-                } else if (valueType.getName().contains("VpnService")) {
+                    return (T)vpn;
+                } else if(valueType.getName().contains("VpnService")) {
                     VpnService vpn = new VpnService();
                     vpn.setId("id");
-                    return (T) vpn;
-                } else if (valueType.getName().contains("VpnIpSecSiteConnection")) {
+                    return (T)vpn;
+                } else if(valueType.getName().contains("VpnIpSecSiteConnection")) {
                     VpnIpSecSiteConnection vpn = new VpnIpSecSiteConnection();
                     vpn.setId("id");
-                    return (T) vpn;
+                    return (T)vpn;
                 }
                 return null;
             }
@@ -336,7 +335,7 @@ public class OsDriverSvcIpSecResourceTest {
         dcGwIpSecConnection.setTenantId("tenantId");
         dcGwIpSecConnection.setActiveStatus("None");
         dcGwIpSecConnection.setPeerLanCidrs("[{\"ipv4\":\"10.21.3.0\",\"ipMask\":\"24\"}]");
-        dcGwIpSecConnection.setPeerAddress("peerAddress");
+        dcGwIpSecConnection.setPeerAddress("{\"ipv4\":\"10.21.3.0\",\"ipMask\":\"24\"}");
         List<SbiNeIpSec> ipSecConnList = new ArrayList<SbiNeIpSec>();
         ipSecConnList.add(dcGwIpSecConnection);
         System.out.println(JsonUtil.toJson(ipSecConnList));
@@ -375,7 +374,7 @@ public class OsDriverSvcIpSecResourceTest {
         dcGwIpSecConnection.setTenantId("tenantId");
         dcGwIpSecConnection.setActiveStatus("None");
         dcGwIpSecConnection.setPeerLanCidrs("[{\"ipv4\":\"10.21.3.0\",\"ipMask\":\"24\"}]");
-        dcGwIpSecConnection.setPeerAddress("peerAddress");
+        dcGwIpSecConnection.setPeerAddress("{\"ipv4\":\"10.21.3.0\",\"ipMask\":\"24\"}");
         List<SbiNeIpSec> ipSecConnList = new ArrayList<SbiNeIpSec>();
         ipSecConnList.add(dcGwIpSecConnection);
         System.out.println(JsonUtil.toJson(ipSecConnList));
@@ -383,9 +382,6 @@ public class OsDriverSvcIpSecResourceTest {
         ResultRsp<SbiNeIpSec> r1 = roaSource.updateIpSec(request, "ctrlUUIT", "123", dcGwIpSecConnection);
         assertTrue(r1.getHttpCode() == 200);
     }
-
-
-
 
     @Test
     public void testCreateIpSecBranch() throws ServiceException {
@@ -438,10 +434,10 @@ public class OsDriverSvcIpSecResourceTest {
             public CloseableHttpResponse execute(final HttpUriRequest request)
                     throws IOException, ClientProtocolException {
                 CloseableHttpResponseMock resp = new CloseableHttpResponseMock();
-                org.apache.http.message.BasicStatusLine bs = new org.apache.http.message.BasicStatusLine(
-                        new ProtocolVersion("bgp", 2, 1), 201, "success");
+                org.apache.http.message.BasicStatusLine bs =
+                        new org.apache.http.message.BasicStatusLine(new ProtocolVersion("bgp", 2, 1), 201, "success");
                 resp.setStatusLine(bs);
-                return (CloseableHttpResponse) resp;
+                return (CloseableHttpResponse)resp;
             }
         };
 
@@ -450,22 +446,22 @@ public class OsDriverSvcIpSecResourceTest {
             @Mock
             public <T> T readValue(String content, Class<T> valueType)
                     throws IOException, JsonParseException, JsonMappingException {
-                if (valueType.getName().contains("VpnIkePolicy")) {
+                if(valueType.getName().contains("VpnIkePolicy")) {
                     VpnIkePolicy vpn = new VpnIkePolicy();
                     vpn.setId("id");
-                    return (T) vpn;
-                } else if (valueType.getName().contains("VpnIpSecPolicy")) {
+                    return (T)vpn;
+                } else if(valueType.getName().contains("VpnIpSecPolicy")) {
                     VpnIpSecPolicy vpn = new VpnIpSecPolicy();
                     vpn.setId("id");
-                    return (T) vpn;
-                } else if (valueType.getName().contains("VpnService")) {
+                    return (T)vpn;
+                } else if(valueType.getName().contains("VpnService")) {
                     VpnService vpn = new VpnService();
                     vpn.setId("id");
-                    return (T) vpn;
-                } else if (valueType.getName().contains("VpnIpSecSiteConnection")) {
+                    return (T)vpn;
+                } else if(valueType.getName().contains("VpnIpSecSiteConnection")) {
                     VpnIpSecSiteConnection vpn = new VpnIpSecSiteConnection();
                     vpn.setId("id");
-                    return (T) vpn;
+                    return (T)vpn;
                 }
                 return null;
             }
@@ -516,7 +512,7 @@ public class OsDriverSvcIpSecResourceTest {
         dcGwIpSecConnection.setTenantId("tenantId");
         dcGwIpSecConnection.setActiveStatus("adminStatus");
         dcGwIpSecConnection.setPeerLanCidrs("[{\"ipv4\":\"10.21.3.0\",\"ipMask\":\"24\"}]");
-        dcGwIpSecConnection.setPeerAddress("peerAddress");
+        dcGwIpSecConnection.setPeerAddress("{\"ipv4\":\"10.21.3.0\",\"ipMask\":\"24\"}");
 
         ResultRsp<SbiNeIpSec> result = roaSource.createIpSec(request, "ctrlUUIT", dcGwIpSecConnectionList);
         assertTrue(result.getHttpCode() == 200);
@@ -578,10 +574,10 @@ public class OsDriverSvcIpSecResourceTest {
             public CloseableHttpResponse execute(final HttpUriRequest request)
                     throws IOException, ClientProtocolException {
                 CloseableHttpResponseMock resp = new CloseableHttpResponseMock();
-                org.apache.http.message.BasicStatusLine bs = new org.apache.http.message.BasicStatusLine(
-                        new ProtocolVersion("bgp", 2, 1), 500, "success");
+                org.apache.http.message.BasicStatusLine bs =
+                        new org.apache.http.message.BasicStatusLine(new ProtocolVersion("bgp", 2, 1), 500, "success");
                 resp.setStatusLine(bs);
-                return (CloseableHttpResponse) resp;
+                return (CloseableHttpResponse)resp;
             }
         };
 
@@ -620,12 +616,12 @@ public class OsDriverSvcIpSecResourceTest {
         dcGwIpSecConnection.setTenantId("tenantId");
         dcGwIpSecConnection.setActiveStatus("adminStatus");
         dcGwIpSecConnection.setPeerLanCidrs("[{\"ipv4\":\"10.21.3.0\",\"ipMask\":\"24\"}]");
-        dcGwIpSecConnection.setPeerAddress("peerAddress");
+        dcGwIpSecConnection.setPeerAddress("{\"ipv4\":\"10.21.3.0\",\"ipMask\":\"24\"}");
         List<SbiNeIpSec> ipSecConnList = new ArrayList<SbiNeIpSec>();
         ipSecConnList.add(dcGwIpSecConnection);
         ResultRsp<SbiNeIpSec> rsp = roaSource.createIpSec(request, "ctrlUUIT", ipSecConnList);
 
-        assertTrue(rsp.getErrorCode()==ErrorCode.OVERLAYVPN_FAILED);
+        assertTrue(rsp.getErrorCode() == ErrorCode.OVERLAYVPN_FAILED);
 
     }
 
@@ -712,10 +708,10 @@ public class OsDriverSvcIpSecResourceTest {
             public CloseableHttpResponse execute(final HttpUriRequest request)
                     throws IOException, ClientProtocolException {
                 CloseableHttpResponseMock resp = new CloseableHttpResponseMock();
-                org.apache.http.message.BasicStatusLine bs = new org.apache.http.message.BasicStatusLine(
-                        new ProtocolVersion("bgp", 2, 1), 200, "success");
+                org.apache.http.message.BasicStatusLine bs =
+                        new org.apache.http.message.BasicStatusLine(new ProtocolVersion("bgp", 2, 1), 200, "success");
                 resp.setStatusLine(bs);
-                return (CloseableHttpResponse) resp;
+                return (CloseableHttpResponse)resp;
             }
         };
         new MockUp<DaoUtil<T>>() {
@@ -873,10 +869,10 @@ public class OsDriverSvcIpSecResourceTest {
             public CloseableHttpResponse execute(final HttpUriRequest request)
                     throws IOException, ClientProtocolException {
                 CloseableHttpResponseMock resp = new CloseableHttpResponseMock();
-                org.apache.http.message.BasicStatusLine bs = new org.apache.http.message.BasicStatusLine(
-                        new ProtocolVersion("bgp", 2, 1), 200, "success");
+                org.apache.http.message.BasicStatusLine bs =
+                        new org.apache.http.message.BasicStatusLine(new ProtocolVersion("bgp", 2, 1), 200, "success");
                 resp.setStatusLine(bs);
-                return (CloseableHttpResponse) resp;
+                return (CloseableHttpResponse)resp;
             }
         };
         new MockUp<DaoUtil<T>>() {

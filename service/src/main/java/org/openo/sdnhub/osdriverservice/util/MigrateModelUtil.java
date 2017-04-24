@@ -37,7 +37,6 @@ import org.openo.sdnhub.osdriverservice.openstack.client.model.enums.DpdAction;
 import org.openo.sdnhub.osdriverservice.sbi.model.OsIpSec;
 import org.openo.sdnhub.osdriverservice.sbi.model.OsSubnet;
 import org.openo.sdnhub.osdriverservice.sbi.model.OsVpc;
-import org.openo.sdno.framework.container.util.JsonUtil;
 import org.openo.sdno.overlayvpn.model.ipsec.IkePolicy;
 import org.openo.sdno.overlayvpn.model.ipsec.IpSecPolicy;
 import org.openo.sdno.overlayvpn.model.netmodel.ipsec.DcGwIpSecConnection;
@@ -47,7 +46,6 @@ import org.openo.sdno.ssl.EncryptionUtil;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-
 
 /**
  * Model converting class, converting SDNO model to adapter model.<br>
@@ -236,7 +234,7 @@ public class MigrateModelUtil {
      */
     private static VpnIkePolicy convertIke(SbiNeIpSec dcGwIpSecConnection) {
         SbiIkePolicy ikePolicy = dcGwIpSecConnection.getIkePolicy();
-        if (ikePolicy == null) {
+        if(ikePolicy == null) {
             return null;
         }
         VpnIkePolicy ike = new VpnIkePolicy();
@@ -262,7 +260,7 @@ public class MigrateModelUtil {
     private static VpnIpSecPolicy convertIpSec(SbiNeIpSec dcGwIpSecConnection) {
         SbiIpSecPolicy ipSecPolicy = dcGwIpSecConnection.getIpSecPolicy();
 
-        if (ipSecPolicy == null) {
+        if(ipSecPolicy == null) {
             return null;
         }
 
@@ -276,7 +274,6 @@ public class MigrateModelUtil {
 
         ipsec.setPfs(ipSecPolicy.getPfs().toLowerCase());
         ipsec.setTenantId(dcGwIpSecConnection.getTenantId());
-
 
         return ipsec;
     }
@@ -293,9 +290,9 @@ public class MigrateModelUtil {
         VpnService vpn = new VpnService();
         vpn.setDescription(dcGwIpSecConnection.getName());
         vpn.setTenantId(dcGwIpSecConnection.getTenantId());
-        //it will get set at sbi layer
+        // it will get set at sbi layer
         vpn.setRouterId(null);
-        //it will get set at sbi layer
+        // it will get set at sbi layer
         vpn.setSubnetId(null);
         vpn.setAdminStateUp(true);
         vpn.setName(dcGwIpSecConnection.getName());
@@ -316,10 +313,10 @@ public class MigrateModelUtil {
     private static VpnIpSecSiteConnection convertConn(SbiNeIpSec dcGwIpSecConnection) throws ServiceException {
 
         List<String> peerCidrList = new ArrayList<>();
-        if(!dcGwIpSecConnection.getPeerLanCidrs().isEmpty()){
+        if(!dcGwIpSecConnection.getPeerLanCidrs().isEmpty()) {
             JSONArray results = JSONArray.fromObject(dcGwIpSecConnection.getPeerLanCidrs());
-            for(int i=0; i<results.size(); i++){
-                JSONObject jsonObj  = results.getJSONObject(i);
+            for(int i = 0; i < results.size(); i++) {
+                JSONObject jsonObj = results.getJSONObject(i);
                 peerCidrList.add(jsonObj.get("ipv4") + "/" + jsonObj.get("ipMask"));
             }
         }
@@ -329,8 +326,14 @@ public class MigrateModelUtil {
         conn.setTenantId(dcGwIpSecConnection.getTenantId());
         conn.setAdminStateUp(true);
         conn.setName(dcGwIpSecConnection.getName());
-        conn.setPeerAddress(dcGwIpSecConnection.getPeerAddress());
-        conn.setPeerId(dcGwIpSecConnection.getPeerAddress());
+
+        String nbiPeerAddress = dcGwIpSecConnection.getPeerAddress();
+        if(nbiPeerAddress != null && !nbiPeerAddress.isEmpty()) {
+            JSONObject jsonObj = JSONObject.fromObject(nbiPeerAddress);
+            conn.setPeerAddress(jsonObj.getString("ipv4"));
+            conn.setPeerId(jsonObj.getString("ipv4"));
+        }
+
         conn.setPeerCidrs(peerCidrList);
 
         if(dcGwIpSecConnection.getIkePolicy() != null && dcGwIpSecConnection.getIkePolicy().getPsk() != null) {
@@ -343,6 +346,16 @@ public class MigrateModelUtil {
             conn.setPsk(String.valueOf(psk));
         }
         conn.setSubnets(null);
+
+        VpnDpd dpd = new VpnDpd();
+        dpd.setAction(DpdAction.HOLD.getName());
+        dpd.setInterval(DPD_INTERNVAL);
+        dpd.setTimeout(DPD_TIMEOUT);
+
+        conn.setMtu(MTU);
+        conn.setInitiator(INITIATOR);
+        conn.setAdminStateUp(true);
+        conn.setDpd(dpd);
 
         return conn;
     }
