@@ -5,7 +5,14 @@
         "version": "V200R001C00",
         "openstack_version": "kilo",
         "region": "regionOne",
-        "provider_network": "datecentre"
+        "provider_network": "datacentre"
+    },
+    {
+        "name": "Sdno_Vim",
+        "version": "V200R001C00",
+        "openstack_version": "kilo",
+        "region": "regionOne",
+        "provider_network": "datacentre"
     },
     {
         "name": "Edge1OpenStack",
