@@ -67,7 +67,7 @@ public class MigrateModelUtil {
 
     private static final int DPD_TIMEOUT = 120;
 
-    private static final int MTU = 1800;
+    private static final int MTU = 1500;
 
     private MigrateModelUtil() {
 
